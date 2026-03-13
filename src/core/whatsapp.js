@@ -67,6 +67,25 @@ class WhatsAppCore {
             }
         });
 
+        // Listen for incoming messages
+        this.sock.ev.on("messages.upsert", async (m) => {
+            if (m.type === "notify") {
+                for (const msg of m.messages) {
+                    if (!msg.key.fromMe) {
+                        const sender = msg.key.remoteJid;
+                        const text = msg.message?.conversation ||
+                            msg.message?.extendedTextMessage?.text ||
+                            msg.message?.imageMessage?.caption ||
+                            "Non-text message";
+
+                        console.log(`📩 New message from ${sender}: ${text}`);
+
+                        // Future: Trigger webhook here
+                    }
+                }
+            }
+        });
+
         return this.sock;
     }
 
