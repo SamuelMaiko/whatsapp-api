@@ -13,15 +13,43 @@ app.get("/health", (req, res) => {
 app.post("/send-message", async (req, res) => {
     try {
         const { to, message } = req.body;
-
         if (!to || !message) {
             return res.status(400).json({ error: "Missing 'to' or 'message' field" });
         }
-
         const result = await whatsappService.sendMessage(to, message);
         res.json({ success: true, result });
     } catch (error) {
         console.error("Error sending message:", error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Route to send images
+app.post("/send-image", async (req, res) => {
+    try {
+        const { to, url, caption } = req.body;
+        if (!to || !url) {
+            return res.status(400).json({ error: "Missing 'to' or 'url' field" });
+        }
+        const result = await whatsappService.sendImage(to, url, caption);
+        res.json({ success: true, result });
+    } catch (error) {
+        console.error("Error sending image:", error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Route to send documents
+app.post("/send-document", async (req, res) => {
+    try {
+        const { to, url, fileName, caption } = req.body;
+        if (!to || !url || !fileName) {
+            return res.status(400).json({ error: "Missing 'to', 'url', or 'fileName' field" });
+        }
+        const result = await whatsappService.sendDocument(to, url, fileName, caption);
+        res.json({ success: true, result });
+    } catch (error) {
+        console.error("Error sending document:", error);
         res.status(500).json({ error: error.message });
     }
 });

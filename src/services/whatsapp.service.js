@@ -1,23 +1,45 @@
 const whatsappCore = require("../core/whatsapp");
 
 class WhatsAppService {
-    async sendMessage(to, message) {
-        const sock = whatsappCore.getSocket();
-        if (!sock) {
-            throw new Error("WhatsApp socket not initialized");
-        }
-
-        // Format number: remove plus, add @s.whatsapp.net
+    async formatNumber(to) {
         let formattedNumber = to.replace(/[^\d]/g, "");
         if (!formattedNumber.endsWith("@s.whatsapp.net")) {
             formattedNumber = `${formattedNumber}@s.whatsapp.net`;
         }
-
-        const sentMsg = await sock.sendMessage(formattedNumber, { text: message });
-        return sentMsg;
+        return formattedNumber;
     }
 
-    // Future: sendMedia, receiveMessage hooks, etc.
+    async sendMessage(to, message) {
+        const sock = whatsappCore.getSocket();
+        if (!sock) throw new Error("WhatsApp socket not initialized");
+
+        const jid = await this.formatNumber(to);
+        return await sock.sendMessage(jid, { text: message });
+    }
+
+    async sendImage(to, imageUrl, caption) {
+        const sock = whatsappCore.getSocket();
+        if (!sock) throw new Error("WhatsApp socket not initialized");
+
+        const jid = await this.formatNumber(to);
+        return await sock.sendMessage(jid, {
+            image: { url: imageUrl },
+            caption: caption
+        });
+    }
+
+    async sendDocument(to, docUrl, fileName, caption) {
+        const sock = whatsappCore.getSocket();
+        if (!sock) throw new Error("WhatsApp socket not initialized");
+
+        const jid = await this.formatNumber(to);
+        return await sock.sendMessage(jid, {
+            document: { url: docUrl },
+            fileName: fileName,
+            caption: caption,
+            mimetype: "application/octet-stream" // Generic, Baileys usually auto-detects
+        });
+    }
 }
 
 module.exports = new WhatsAppService();
