@@ -72,13 +72,19 @@ class WhatsAppCore {
             if (m.type === "notify") {
                 for (const msg of m.messages) {
                     if (!msg.key.fromMe) {
-                        const sender = msg.key.remoteJid;
+                        const jid = msg.key.remoteJid;
+                        // Use remoteJidAlt if available as per user's observation, else fallback to jid
+                        const senderJid = msg.key.remoteJidAlt || jid;
+                        const phoneNumber = senderJid.split("@")[0];
+                        const pushName = msg.pushName || "Unknown";
+
                         const text = msg.message?.conversation ||
                             msg.message?.extendedTextMessage?.text ||
                             msg.message?.imageMessage?.caption ||
                             "Non-text message";
 
-                        console.log(`📩 New message from ${sender}: ${text}`);
+                        console.log(`📩 New message from ${pushName} (${phoneNumber}): ${text}`);
+                        // Removed full object log for cleanliness, but we know where to find it now!
 
                         // Future: Trigger webhook here
                     }
