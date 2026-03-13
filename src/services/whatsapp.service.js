@@ -27,19 +27,6 @@ class WhatsAppService {
             caption: caption
         });
     }
-
-    async sendDocument(to, docUrl, fileName, caption) {
-        const sock = whatsappCore.getSocket();
-        if (!sock) throw new Error("WhatsApp socket not initialized");
-
-        const jid = await this.formatNumber(to);
-        return await sock.sendMessage(jid, {
-            document: { url: docUrl },
-            fileName: fileName,
-            caption: caption,
-            mimetype: "application/octet-stream" // Generic, Baileys usually auto-detects
-        });
-    }
 }
 
 module.exports = new WhatsAppService();

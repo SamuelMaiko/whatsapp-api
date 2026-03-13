@@ -39,19 +39,4 @@ app.post("/send-image", async (req, res) => {
     }
 });
 
-// Route to send documents
-app.post("/send-document", async (req, res) => {
-    try {
-        const { to, url, fileName, caption } = req.body;
-        if (!to || !url || !fileName) {
-            return res.status(400).json({ error: "Missing 'to', 'url', or 'fileName' field" });
-        }
-        const result = await whatsappService.sendDocument(to, url, fileName, caption);
-        res.json({ success: true, result });
-    } catch (error) {
-        console.error("Error sending document:", error);
-        res.status(500).json({ error: error.message });
-    }
-});
-
 module.exports = app;
