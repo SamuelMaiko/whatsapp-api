@@ -1,5 +1,5 @@
 const WhatsAppInstance = require('./WhatsAppInstance');
-const Session = require('../models/Session');
+const Session = require('../../../../shared/models/Session');
 
 class SessionManager {
     constructor() {
