@@ -23,7 +23,11 @@ const Session = sequelize.define('Session', {
         type: DataTypes.STRING,
         allowNull: true,
         validate: {
-            isUrl: true
+            isUrlOrEmpty(value) {
+                if (value && value !== '' && !/^(http|https):\/\/[^ "]+$/.test(value)) {
+                    throw new Error('Invalid URL format');
+                }
+            }
         }
     },
     pairingCode: {

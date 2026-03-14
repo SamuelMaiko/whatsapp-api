@@ -1,4 +1,10 @@
 import express from 'express';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 import sequelize from "../../../shared/config/database.js";
 import User from "../../../shared/models/User.js";
 import Session from "../../../shared/models/Session.js";
@@ -8,6 +14,17 @@ dotenv.config();
 
 const app = express();
 app.use(express.json());
+
+// Serve media files
+const workerPublicPath = path.join(__dirname, "../public");
+if (!fs.existsSync(workerPublicPath)) {
+    fs.mkdirSync(workerPublicPath, { recursive: true });
+}
+const mediaDir = path.join(workerPublicPath, 'media');
+if (!fs.existsSync(mediaDir)) {
+    fs.mkdirSync(mediaDir, { recursive: true });
+}
+app.use('/media', express.static(mediaDir));
 
 const WORKER_PORT = process.env.WORKER_PORT || 4000;
 

@@ -109,10 +109,60 @@ class WhatsAppInstance {
         const phoneNumber = senderJid.split("@")[0];
         const pushName = msg.pushName || "Unknown";
 
-        const text = msg.message?.conversation ||
-            msg.message?.extendedTextMessage?.text ||
-            msg.message?.imageMessage?.caption ||
-            "Non-text message";
+        // Unwrap the message if it's nested (Forwarded View-Once, Ephemeral, etc.)
+        const getMessage = (m) => {
+            if (!m) return null;
+            if (m.viewOnceMessageV2) return m.viewOnceMessageV2.message;
+            if (m.viewOnceMessage) return m.viewOnceMessage.message;
+            if (m.ephemeralMessage) return m.ephemeralMessage.message;
+            if (m.documentWithCaptionMessage) return m.documentWithCaptionMessage.message;
+            return m;
+        };
+
+        const actualMessage = getMessage(msg.message);
+        if (!actualMessage) return;
+
+        const text = actualMessage.conversation ||
+            actualMessage.extendedTextMessage?.text ||
+            actualMessage.imageMessage?.caption ||
+            actualMessage.videoMessage?.caption ||
+            actualMessage.documentMessage?.caption ||
+            "";
+
+        let imageUrl = null;
+
+        // Handle Image Messages
+        if (actualMessage.imageMessage) {
+            try {
+                console.log(`[${this.sessionId}] Downloading media from ${pushName}...`);
+                const { downloadMediaMessage } = await import('@whiskeysockets/baileys');
+                const buffer = await downloadMediaMessage(
+                    msg,
+                    'buffer',
+                    {},
+                    {
+                        logger: this.logger,
+                        reuploadRequest: this.sock?.updateMediaMessage
+                    }
+                );
+
+                const filename = `${this.sessionId}_${Date.now()}.jpg`;
+                const mediaDir = path.join(__dirname, "../../public", "media");
+
+                if (!fs.existsSync(mediaDir)) {
+                    fs.mkdirSync(mediaDir, { recursive: true });
+                }
+
+                const filePath = path.join(mediaDir, filename);
+                fs.writeFileSync(filePath, buffer);
+
+                const host = process.env.BASE_URL || 'http://localhost:4000';
+                imageUrl = `${host}/media/${filename}`;
+                console.log(`[${this.sessionId}] Image saved: ${imageUrl}`);
+            } catch (err) {
+                console.error(`❌ [${this.sessionId}] Error downloading media:`, err.message);
+            }
+        }
 
         console.log(`📩 [${this.sessionId}] Message from ${pushName} (${phoneNumber}): ${text}`);
 
@@ -123,6 +173,7 @@ class WhatsAppInstance {
                     phoneNumber,
                     pushName,
                     text,
+                    imageUrl,
                     raw: msg
                 });
             } catch (error) {

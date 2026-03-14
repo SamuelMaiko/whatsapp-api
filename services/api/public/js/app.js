@@ -104,6 +104,8 @@ authForm.addEventListener('submit', async (e) => {
 function showDashboard() {
     authView.style.display = 'none';
     dashboardView.style.display = 'flex';
+    sessionsView.style.display = 'block';
+    docsView.style.display = 'none';
     loadSessions();
 }
 
@@ -124,10 +126,33 @@ async function loadSessions() {
 }
 
 function renderSessions(sessions) {
+    // Prevent re-rendering if user is currently typing in ANY webhook input
+    if (document.activeElement && document.activeElement.id.startsWith('webhook-')) {
+        // Only update status badges if needed, but don't wipe everything
+        sessions.forEach(session => {
+            const badge = document.querySelector(`#card-${session.id} .status-badge`);
+            if (badge) {
+                badge.className = `status-badge status-${session.status.toLowerCase()}`;
+                badge.innerText = session.status;
+            }
+        });
+        return;
+    }
+
     sessionsContainer.innerHTML = '';
+    if (sessions.length === 0) {
+        sessionsContainer.innerHTML = `
+            <div style="grid-column: 1/-1; text-align: center; padding: 4rem; background: white; border-radius: 1rem; border: 1px dashed var(--border-color);">
+                <p style="color: var(--text-muted); margin-bottom: 1rem;">No sessions found</p>
+                <button class="btn" style="width: auto; padding: 0.5rem 1rem;" onclick="document.getElementById('add-session-btn').click()">Create your first session</button>
+            </div>
+        `;
+        return;
+    }
     sessions.forEach(session => {
         const card = document.createElement('div');
         card.className = 'session-card';
+        card.id = `card-${session.id}`;
         card.innerHTML = `
             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
                 <h3 style="font-size: 1rem;">${session.id}</h3>
@@ -149,7 +174,7 @@ function renderSessions(sessions) {
                 <label style="font-size: 0.75rem;">Webhook URL</label>
                 <div style="display: flex; gap: 0.5rem;">
                     <input type="text" value="${session.webhookUrl || ''}" placeholder="https://api.yourcom.com/webhook" style="padding: 0.5rem; font-size: 0.75rem;" id="webhook-${session.id}">
-                    <button class="btn" style="width: auto; padding: 0.5rem;" onclick="updateWebhook('${session.id}')">Save</button>
+                    <button class="btn" id="btn-save-${session.id}" style="width: auto; padding: 0.5rem;" onclick="updateWebhook('${session.id}')">Save</button>
                 </div>
             </div>
 
@@ -174,6 +199,8 @@ function renderSessions(sessions) {
 
 function renderDocs(section) {
     let content = '';
+    const beautify = (obj) => JSON.stringify(obj, null, 2);
+
     switch (section) {
         case 'getting-started':
             content = `
@@ -190,14 +217,25 @@ function renderDocs(section) {
                         <h3 style="margin-top: 1.5rem; margin-bottom: 0.5rem;">2. Scan & Connect</h3>
                         <p>Scan the QR code with your phone. Once the status turns <span class="status-badge status-connected">CONNECTED</span>, your API Key will be revealed.</p>
 
-                        <h3 style="margin-top: 1.5rem; margin-bottom: 0.5rem;">3. Use the Base URL</h3>
+                        <h3 style="margin-top: 1.5rem; margin-bottom: 0.5rem;">3. Base URL</h3>
                         <p>All API requests should be sent to your instance domain:</p>
-                        <div class="code-block">${BASE_URL}/api</div>
+                        <div class="code-block">
+                            <span class="copy-trigger" onclick="copyText('${BASE_URL}/api')">Copy</span>
+                            ${BASE_URL}/api
+                        </div>
+
+                        <h3 style="margin-top: 2rem; margin-bottom: 0.5rem;">Request Headers</h3>
+                        <p>Include the API key as an Authorization header using the Bearer token scheme.</p>
+                        <div class="code-block">
+                            <span class="copy-trigger" onclick="copyText('Authorization: Bearer YOUR_API_KEY\\nContent-Type: application/json')">Copy</span>
+                            Authorization: Bearer YOUR_API_KEY<br>Content-Type: application/json
+                        </div>
                     </div>
                 </div>
             `;
             break;
         case 'send-message':
+            const msgBody = { to: "2547XXXXXXXX", message: "Hello from the API!" };
             content = `
                 <div class="docs-section">
                     <h1>Send Private Message</h1>
@@ -207,25 +245,28 @@ function renderDocs(section) {
                         <span class="method-post">POST</span> /api/send-message
                     </div>
 
-                    <h3>Authentication</h3>
-                    <p>Required in Header:</p>
-                    <div class="code-block">x-api-key: YOUR_SESSION_API_KEY</div>
+                    <h3>Base URL</h3>
+                    <div class="code-block">${BASE_URL}/api</div>
 
                     <h3 class="code-title">REQUEST BODY</h3>
-                    <div class="code-block">{
-  "to": "2547XXXXXXXX",
-  "message": "Hello from the API!"
-}</div>
+                    <div class="code-block">
+                        <span class="copy-trigger" onclick="copyText('${beautify(msgBody).replace(/\n/g, '\\n')}')">Copy</span>
+                        <pre>${beautify(msgBody)}</pre>
+                    </div>
 
                     <h3 class="code-title">CURL EXAMPLE</h3>
-                    <div class="code-block">curl -X POST ${BASE_URL}/api/send-message \\
-  -H "x-api-key: your_key_here" \\
-  -H "Content-Type: application/json" \\
-  -d '{"to": "254700000000", "message": "Hi there!"}'</div>
+                    <div class="code-block">
+                        <span class="copy-trigger" onclick="copyText('curl -X POST ${BASE_URL}/api/send-message \\\\n  -H \"Authorization: Bearer your_key_here\" \\\\n  -H \"Content-Type: application/json\" \\\\n  -d \\'${JSON.stringify(msgBody)}\\'')">Copy</span>
+                        curl -X POST ${BASE_URL}/api/send-message \\<br>
+                        &nbsp;&nbsp;-H "Authorization: Bearer your_key_here" \\<br>
+                        &nbsp;&nbsp;-H "Content-Type: application/json" \\<br>
+                        &nbsp;&nbsp;-d '${JSON.stringify(msgBody)}'
+                    </div>
                 </div>
             `;
             break;
         case 'send-image':
+            const imgBody = { to: "2547XXXXXXXX", url: "https://example.com/image.jpg", caption: "Check this out!" };
             content = `
                 <div class="docs-section">
                     <h1>Send Image Message</h1>
@@ -236,11 +277,10 @@ function renderDocs(section) {
                     </div>
 
                     <h3 class="code-title">REQUEST BODY</h3>
-                    <div class="code-block">{
-  "to": "2547XXXXXXXX",
-  "url": "https://example.com/image.jpg",
-  "caption": "Check this out!"
-}</div>
+                    <div class="code-block">
+                        <span class="copy-trigger" onclick="copyText('${beautify(imgBody).replace(/\n/g, '\\n')}')">Copy</span>
+                        <pre>${beautify(imgBody)}</pre>
+                    </div>
                     <table class="params-table">
                         <thead>
                             <tr><th>Field</th><th>Type</th><th>Description</th></tr>
@@ -255,25 +295,52 @@ function renderDocs(section) {
             `;
             break;
         case 'webhooks':
+            const webhookBody = {
+                sessionId: "sess_123...",
+                phoneNumber: "2547XXXXXXXX",
+                pushName: "John Doe",
+                text: "Hello!",
+                raw: {}
+            };
             content = `
                 <div class="docs-section">
                     <h1>Webhooks</h1>
-                    <p style="line-height: 1.6;">Configure a Webhook URL to receive incoming messages in real-time. We will send a POST request to your URL whenever a message is received.</p>
+                    <p style="line-height: 1.6;">Webhooks allow your application to receive real-time notifications whenever a message is sent to your connected WhatsApp number. Instead of polling the API for new messages, we push the data to your server instantly.</p>
                     
-                    <h3 class="code-title">PAYLOAD STRUCTURE</h3>
-                    <div class="code-block">{
-  "sessionId": "sess_123...",
-  "phoneNumber": "2547XXXXXXXX",
-  "pushName": "John Doe",
-  "text": "Hello!",
-  "raw": { ... }
-}</div>
+                    <div style="margin: 1.5rem 0; padding: 1rem; background: rgba(59, 130, 246, 0.1); border-left: 4px solid var(--primary-color); border-radius: 0.5rem;">
+                        <h4 style="color: var(--primary-hover); margin-bottom: 0.5rem;">⚙️ How to Setup</h4>
+                        <ol style="font-size: 0.85rem; margin-left: 1.2rem; line-height: 1.6;">
+                            <li>Develop a POST endpoint on your server that can receive JSON.</li>
+                            <li>Go to the <b>Sessions</b> tab in your dashboard.</li>
+                            <li>Find your active session and paste your URL into the <b>Webhook URL</b> field.</li>
+                            <li>Click <b>Save</b>. All incoming messages will now be forwarded there.</li>
+                        </ol>
+                    </div>
+
+                    <h3 style="margin-top: 2rem; margin-bottom: 1rem;">Supported Content</h3>
+                    <p style="font-size: 0.9rem; margin-bottom: 1rem;">The webhook currently supports the following message types:</p>
+                    <ul style="font-size: 0.85rem; margin-left: 1.2rem; line-height: 1.6; margin-bottom: 2rem;">
+                        <li><b>Text Messages:</b> Standard chat messages and extended text.</li>
+                        <li><b>Image Messages:</b> Includes a direct <code>imageUrl</code> to the downloaded file and the <code>text</code> caption.</li>
+                    </ul>
+
+                    <h3 class="code-title">EXPECTED PAYLOAD STRUCTURE</h3>
+                    <div class="code-block">
+                        <span class="copy-trigger" onclick="copyText('${beautify(webhookBody).replace(/\n/g, '\\n')}')">Copy</span>
+                        <pre>${beautify(webhookBody)}</pre>
+                    </div>
                 </div>
             `;
             break;
     }
     docsContent.innerHTML = content;
 }
+
+// Global helper for docs copy
+window.copyText = (text) => {
+    navigator.clipboard.writeText(text);
+    alert('Copied to clipboard!');
+};
 
 // UI Helpers
 window.toggleApiKey = (id, key) => {
@@ -307,7 +374,15 @@ addSessionBtn.addEventListener('click', async () => {
 });
 
 async function updateWebhook(sessionId) {
-    const url = document.getElementById(`webhook-${sessionId}`).value;
+    const input = document.getElementById(`webhook-${sessionId}`);
+    const btn = document.getElementById(`btn-save-${sessionId}`);
+    const url = input.value;
+
+    // Simple visual feedback
+    const originalText = btn.innerText;
+    btn.innerText = 'Saving...';
+    btn.disabled = true;
+
     try {
         const res = await fetch(`${API_URL}/sessions/webhook`, {
             method: 'PATCH',
@@ -318,9 +393,27 @@ async function updateWebhook(sessionId) {
             body: JSON.stringify({ sessionId, webhookUrl: url })
         });
         const data = await res.json();
-        if (data.success) alert('Webhook updated!');
+        if (data.success) {
+            btn.innerText = 'Saved!';
+            btn.style.backgroundColor = 'var(--success)';
+            setTimeout(() => {
+                btn.innerText = originalText;
+                btn.style.backgroundColor = '';
+                btn.disabled = false;
+            }, 2000);
+        } else {
+            throw new Error(data.error || 'Failed to update');
+        }
     } catch (err) {
         console.error(err);
+        alert('Error: ' + err.message);
+        btn.innerText = 'Error';
+        btn.style.backgroundColor = 'var(--danger)';
+        setTimeout(() => {
+            btn.innerText = originalText;
+            btn.style.backgroundColor = '';
+            btn.disabled = false;
+        }, 2000);
     }
 }
 
