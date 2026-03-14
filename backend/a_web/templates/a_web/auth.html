@@ -16,18 +16,19 @@
             <div class="auth-card">
                 <div class="logo">WA<span>MANAGE</span></div>
                 <h2 style="text-align: center; margin-bottom: 1.5rem;" id="auth-title">
-                    {% if mode == 'signup' %}Create an Account{% else %}VERIFIED BACK{% endif %}
+                    {% if is_signup %}Create an Account{% else %}Sign in{% endif %}
                 </h2>
                 {% if error %}
                 <p style="color: red; text-align: center; margin-bottom: 1rem;">{{ error }}</p>
                 {% endif %}
                 <form id="auth-form" method="POST"
-                    action="{% if mode == 'signup' %}{% url 'web-signup' %}{% else %}{% url 'web-login' %}{% endif %}">
+                    action="{% if is_signup %}{% url 'web-signup' %}{% else %}{% url 'web-login' %}{% endif %}">
                     {% csrf_token %}
 
-                    <div class="form-group" id="name-group" {% if mode != 'signup' %}style="display: none;" {% endif %}>
+                    <div class="form-group" id="name-group" {% if not is_signup %}style="display: none;" {% endif %}>
                         <label>Full Name</label>
-                        <input type="text" name="name" id="name-input" placeholder="John Doe" {% if mode == 'signup' %}required{% endif %}>
+                        <input type="text" name="name" id="name-input" placeholder="John Doe" {% if is_signup
+                            %}required{% endif %}>
                     </div>
 
                     <div class="form-group">
@@ -39,14 +40,16 @@
                         <input type="password" name="password" required placeholder="••••••••">
                     </div>
                     <button type="submit" class="btn" id="auth-btn">
-                        {% if mode == 'signup' %}Sign Up{% else %}Sign In{% endif %}
+                        {% if is_signup %}Sign Up{% else %}Sign In{% endif %}
                     </button>
 
                     <p style="text-align: center; margin-top: 1rem; color: #64748b; font-size: 0.875rem;">
-                        <span>{% if mode == 'signup' %}Already have an account?{% else %}Don't have an account?{% endif %}</span>
-                        <a href="{% if mode == 'signup' %}{% url 'web-login' %}{% else %}{% url 'web-signup' %}{% endif %}"
+                        <span>
+                            {% if is_signup %}Already have an account?{% else %}Don't have an account?{% endif %}
+                        </span>
+                        <a href="{% if is_signup %}{% url 'web-login' %}{% else %}{% url 'web-signup' %}{% endif %}"
                             style="color: var(--primary-color); text-decoration: none; font-weight: 600;">
-                            {% if mode == 'signup' %}Sign In{% else %}Create one{% endif %}
+                            {% if is_signup %}Sign In{% else %}Create one{% endif %}
                         </a>
                     </p>
                 </form>
