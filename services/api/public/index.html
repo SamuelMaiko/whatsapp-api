@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 </head>
+
 <body>
     <div id="app">
         <!-- Auth View -->
@@ -16,7 +18,7 @@
             <div class="auth-card">
                 <div class="logo">WA<span>MANAGE</span></div>
                 <h2 style="text-align: center; margin-bottom: 1.5rem;" id="auth-title">Welcome Back</h2>
-                
+
                 <form id="auth-form">
                     <div class="form-group" id="name-group" style="display: none;">
                         <label>Full Name</label>
@@ -39,14 +41,26 @@
         <!-- Dashboard View -->
         <div id="dashboard-view" class="dashboard-layout" style="display: none;">
             <aside class="sidebar">
-                <div class="logo" style="color: white; text-align: left; margin-bottom: 3rem;">WA<span>MANAGE</span></div>
+                <div class="logo" style="color: white; text-align: left; margin-bottom: 3rem;">WA<span>MANAGE</span>
+                </div>
                 <nav>
                     <div class="nav-item active">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="14" width="7" height="7"></rect>
+                            <rect x="3" y="14" width="7" height="7"></rect>
+                        </svg>
                         Sessions
                     </div>
                     <div class="nav-item" id="logout-btn">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"></path>
+                            <polyline points="16 17 21 12 16 7"></polyline>
+                            <line x1="21" y1="12" x2="9" y2="12"></line>
+                        </svg>
                         Logout
                     </div>
                 </nav>
@@ -58,7 +72,8 @@
                         <h1>Sessions</h1>
                         <p style="color: var(--text-muted)">Manage your connected WhatsApp instances</p>
                     </div>
-                    <button class="btn" style="width: auto; padding: 0.75rem 1.5rem;" id="add-session-btn">+ Add Session</button>
+                    <button class="btn" style="width: auto; padding: 0.75rem 1.5rem;" id="add-session-btn">+ Add
+                        Session</button>
                 </header>
 
                 <div class="sessions-grid" id="sessions-container">
@@ -69,8 +84,9 @@
     </div>
 
     <!-- QR Modal Placeholder or dynamic insertion -->
-    
+
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
     <script src="js/app.js"></script>
 </body>
+
 </html>

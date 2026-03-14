@@ -22,7 +22,7 @@ class WhatsAppInstance {
         this.options = options; // For webhookUrl, etc.
         this.sock = null;
         this.status = 'INIT';
-        this.sessionDir = path.join(__dirname, "../../../sessions", sessionId);
+        this.sessionDir = path.join(__dirname, "../../../../sessions", sessionId);
 
         this.logger = P({ level: "silent" });
         this.onStatusChange = options.onStatusChange || (() => { });
