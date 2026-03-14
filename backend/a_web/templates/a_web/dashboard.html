@@ -43,7 +43,7 @@
                     </svg>
                     Documentation
                 </div>
-                <div class="sub-nav" id="docs-sub-nav" {% if active_tab != 'docs' %}style="display: none;" {% endif %}>
+                <div class="sub-nav" id="docs-sub-nav" {% if active_tab !='docs' %}style="display: none;" {% endif %}>
                     <div class="sub-nav-item {% if active_section == 'auth' %}active{% endif %}"
                         hx-get="{% url 'web-docs-section' 'auth' %}" hx-target="#main-content-area" hx-push-url="true"
                         onclick="setSubActive(this)">Authentication</div>
@@ -102,6 +102,22 @@
         function setSubActive(el) {
             document.querySelectorAll('.sub-nav-item').forEach(item => item.classList.remove('active'));
             el.classList.add('active');
+        }
+
+        function copyToClipboard(btn) {
+            const pre = btn.nextElementSibling;
+            const text = pre.innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = btn.innerText;
+                btn.innerText = 'COPIED';
+                btn.style.background = 'var(--success-color, #10b981)';
+                btn.style.color = 'white';
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.style.background = '';
+                    btn.style.color = '';
+                }, 2000);
+            });
         }
     </script>
 </body>
