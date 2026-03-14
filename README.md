@@ -8,7 +8,7 @@ WAMANAGE is a robust, multi-service WhatsApp automation monorepo designed for de
 
 This project is structured as a collection of independent services:
 
--   **`services/api`**: The primary entry point.
+-   **`backend`**: The primary entry point.
     -   **Django & DRF**: Modern Python backend replaces the old Node service.
     -   **Web Dashboard**: Django templates with interactive JS.
     -   **Developer Documentation**: Integrated portal for API usage.
@@ -32,7 +32,7 @@ Clone the repository and install dependencies for the services you need:
 
 **API Service (Django)**
 ```bash
-cd services/api
+cd backend
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt

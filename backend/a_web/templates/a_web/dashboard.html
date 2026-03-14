@@ -1,0 +1,62 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | WAMANAGE</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+</head>
+
+<body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <div class="logo">WA<span>MANAGE</span></div>
+
+            <div class="nav-section-title">Main</div>
+            <nav>
+                <div class="nav-item {% if active_tab == 'sessions' or not active_tab %}active{% endif %}"
+                    hx-get="{% url 'web-sessions' %}" hx-target="#main-content-area" hx-push-url="true"
+                    onclick="setActive(this)">
+                    Sessions
+                </div>
+            </nav>
+
+            <div class="nav-section-title">Developers</div>
+            <nav>
+                <div class="nav-item {% if active_tab == 'docs' %}active{% endif %}" hx-get="{% url 'web-docs' %}"
+                    hx-target="#main-content-area" hx-push-url="true" onclick="setActive(this)">
+                    Documentation
+                </div>
+            </nav>
+
+            <div style="margin-top: auto;">
+                <nav>
+                    <a href="/api/auth/logout" class="nav-item" style="text-decoration: none; color: inherit;">
+                        Logout
+                    </a>
+                </nav>
+            </div>
+        </aside>
+
+        <main class="main-content" id="main-content-area">
+            {% if active_tab == 'docs' %}
+            {% include 'a_web/partials/docs.html' %}
+            {% else %}
+            {% include 'a_web/partials/sessions_list.html' %}
+            {% endif %}
+        </main>
+    </div>
+
+    <script>
+        function setActive(el) {
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            el.classList.add('active');
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,43 @@
+<header class="page-header">
+    <div>
+        <h1>Documentation</h1>
+        <p style="color: var(--text-muted)">Learn how to integrate with the WhatsApp Manage API.</p>
+    </div>
+</header>
+
+<div class="docs-container"
+    style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+    <h2>Authentication</h2>
+    <p>All API requests must be authenticated using the API Key obtained from your active session.</p>
+    <pre style="background: var(--bg-color); padding: 1rem; border-radius: 8px; overflow-x: auto;">
+Authorization: Bearer &lt;YOUR_API_KEY&gt;</pre>
+
+    <h2 style="margin-top: 2rem;">Send Message</h2>
+    <p>Endpoint to send a text message.</p>
+    <code>POST /api/send-message</code>
+    <pre style="background: var(--bg-color); padding: 1rem; border-radius: 8px; margin-top: 1rem; overflow-x: auto;">
+curl -X POST http://localhost:3000/api/send-message \
+-H "Authorization: Bearer YOUR_API_KEY" \
+-H "Content-Type: application/json" \
+-d '{
+  "to": "1234567890",
+  "message": "Hello World!"
+}'</pre>
+
+    <h2 style="margin-top: 2rem;">Send Image</h2>
+    <p>Endpoint to send an image with an optional caption.</p>
+    <code>POST /api/send-image</code>
+    <pre style="background: var(--bg-color); padding: 1rem; border-radius: 8px; margin-top: 1rem; overflow-x: auto;">
+curl -X POST http://localhost:3000/api/send-image \
+-H "Authorization: Bearer YOUR_API_KEY" \
+-H "Content-Type: application/json" \
+-d '{
+  "to": "1234567890",
+  "url": "https://example.com/image.jpg",
+  "caption": "Check this out!"
+}'</pre>
+
+    <h2 style="margin-top: 2rem;">Webhooks</h2>
+    <p>Incoming messages and status updates will be sent to the webhook URL configured on your session via POST request.
+    </p>
+</div>
