@@ -24,6 +24,10 @@ const Session = sequelize.define('Session', {
     pairingCode: {
         type: DataTypes.STRING,
         allowNull: true
+    },
+    qr: {
+        type: DataTypes.TEXT,
+        allowNull: true
     }
 });
 
