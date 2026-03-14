@@ -1,26 +1,46 @@
+import jwt from 'jsonwebtoken';
 import User from '../../../../shared/models/User.js';
+import Session from '../../../../shared/models/Session.js';
 
-const auth = async (req, res, next) => {
+// Middleware for Dashboard (Web UI) using JWT
+export const auth = async (req, res, next) => {
     try {
-        // Try getting API Key from Authorization header or x-api-key header
-        const apiKey = req.header('x-api-key') || req.header('Authorization')?.replace('Bearer ', '');
+        const token = req.header('Authorization')?.replace('Bearer ', '');
+        if (!token) throw new Error();
 
-        if (!apiKey) {
-            return res.status(401).json({ error: 'Auth Error: No API Key provided' });
-        }
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your_fallback_secret');
+        const user = await User.findOne({ where: { id: decoded.id } });
 
-        const user = await User.findOne({ where: { apiKey } });
-
-        if (!user) {
-            return res.status(401).json({ error: 'Auth Error: Invalid API Key' });
-        }
+        if (!user) throw new Error();
 
         req.user = user;
-        req.apiKey = apiKey;
+        req.token = token;
         next();
     } catch (error) {
-        res.status(401).json({ error: 'Please authenticate.' });
+        res.status(401).json({ error: 'Please authenticate with a valid session.' });
     }
 };
 
-export default auth;
+// Middleware for External Developers using Session API Key
+export const apiKeyAuth = async (req, res, next) => {
+    try {
+        const apiKey = req.header('x-api-key') || req.header('Authorization')?.replace('Bearer ', '');
+
+        if (!apiKey) {
+            return res.status(401).json({ error: 'No API Key provided' });
+        }
+
+        // Find the session that this API key belongs to
+        const session = await Session.findOne({ where: { apiKey } });
+
+        if (!session) {
+            return res.status(401).json({ error: 'Invalid API Key' });
+        }
+
+        // Attach session to request for use in controllers
+        req.session = session;
+        next();
+    } catch (error) {
+        res.status(401).json({ error: 'API Authentication failed' });
+    }
+};

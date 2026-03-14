@@ -42,10 +42,15 @@ class SessionManager {
     async deleteSession(sessionId) {
         const instance = this.instances.get(sessionId);
         if (instance) {
-            await instance.logout();
+            try {
+                await instance.logout();
+            } catch (err) {
+                console.error(`Logout failed for ${sessionId}:`, err.message);
+                // Still delete from map to avoid zombie instances
+            }
             this.instances.delete(sessionId);
         }
-        await Session.destroy({ where: { id: sessionId } });
+        // DB deletion is handled by the API service to ensure ownership verification
     }
 }
 

@@ -1,5 +1,6 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../config/database.js';
+import crypto from 'crypto';
 
 const Session = sequelize.define('Session', {
     id: {
@@ -13,6 +14,10 @@ const Session = sequelize.define('Session', {
     status: {
         type: DataTypes.ENUM('INIT', 'QR', 'CONNECTED', 'DISCONNECTED'),
         defaultValue: 'INIT'
+    },
+    apiKey: {
+        type: DataTypes.STRING,
+        unique: true
     },
     webhookUrl: {
         type: DataTypes.STRING,
@@ -28,6 +33,14 @@ const Session = sequelize.define('Session', {
     qr: {
         type: DataTypes.TEXT,
         allowNull: true
+    }
+}, {
+    hooks: {
+        beforeCreate: (session) => {
+            if (!session.apiKey) {
+                session.apiKey = crypto.randomBytes(16).toString('hex');
+            }
+        }
     }
 });
 

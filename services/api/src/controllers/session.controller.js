@@ -56,11 +56,22 @@ export const deleteSession = async (req, res) => {
     try {
         const { sessionId } = req.params;
 
+        // Verify ownership and existence
+        const session = await Session.findOne({ where: { id: sessionId, userId: req.user.id } });
+        if (!session) {
+            return res.status(404).json({ error: "Session not found or unauthorized" });
+        }
+
+        // 1. Tell Worker to stop and cleanup session
         try {
             await axios.delete(`${WORKER_URL}/sessions/${sessionId}`);
         } catch (err) {
-            console.error("Worker not reachable:", err.message);
+            console.error("Worker not reachable for deletion:", err.message);
+            // We continue anyway to ensure DB is cleaned up even if worker is down
         }
+
+        // 2. Delete from Database
+        await session.destroy();
 
         res.json({ success: true });
     } catch (error) {

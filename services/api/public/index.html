@@ -72,16 +72,6 @@
                         <h1>Sessions</h1>
                         <p style="color: var(--text-muted)">Manage your connected WhatsApp instances</p>
                     </div>
-                    <div
-                        style="background: rgba(45, 212, 191, 0.1); border: 1px dashed var(--primary); padding: 0.5rem 1rem; border-radius: 8px; display: flex; align-items: center; gap: 1rem;">
-                        <span
-                            style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">Your
-                            API Key:</span>
-                        <code id="api-key-display"
-                            style="font-family: monospace; color: var(--primary); font-weight: bold; background: rgba(0,0,0,0.2); padding: 0.2rem 0.5rem; border-radius: 4px;">••••••••••••••••</code>
-                        <button class="btn" style="width: auto; padding: 0.25rem 0.5rem; font-size: 0.7rem;"
-                            onclick="navigator.clipboard.writeText(document.getElementById('api-key-display').innerText); alert('API Key copied!')">Copy</button>
-                    </div>
                     <button class="btn" style="width: auto; padding: 0.75rem 1.5rem;" id="add-session-btn">+ Add
                         Session</button>
                 </header>
