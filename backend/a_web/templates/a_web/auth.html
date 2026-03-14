@@ -12,46 +12,40 @@
 
 <body>
     <div id="app">
-        <div id="auth-view" class="auth-container">
+        <div class="auth-container">
             <div class="auth-card">
                 <div class="logo">WA<span>MANAGE</span></div>
-                <h2 style="text-align: center; margin-bottom: 1.5rem;" id="auth-title">
-                    {% if is_signup %}Create an Account{% else %}Sign in{% endif %}
+                <h2 style="text-align: center; margin-bottom: 1.5rem;">
+                    {% if is_signup %}Create Account{% else %}Sign In{% endif %}
                 </h2>
-                {% if error %}
-                <p style="color: red; text-align: center; margin-bottom: 1rem;">{{ error }}</p>
-                {% endif %}
-                <form id="auth-form" method="POST"
+                {% if error %}<p style="color:red;text-align:center;margin-bottom:1rem;">{{ error }}</p>{% endif %}
+                <form method="POST"
                     action="{% if is_signup %}{% url 'web-signup' %}{% else %}{% url 'web-login' %}{% endif %}">
                     {% csrf_token %}
-
-                    <div class="form-group" id="name-group" {% if not is_signup %}style="display: none;" {% endif %}>
+                    <div class="form-group" {% if not is_signup %}style="display:none;" {% endif %}>
                         <label>Full Name</label>
-                        <input type="text" name="name" id="name-input" placeholder="John Doe" {% if is_signup
-                            %}required{% endif %}>
+                        <input type="text" name="name" placeholder="John Doe" {% if is_signup %}required{% endif %}>
                     </div>
-
                     <div class="form-group">
-                        <label>Email Address</label>
+                        <label>Email</label>
                         <input type="email" name="email" required placeholder="name@company.com">
                     </div>
                     <div class="form-group">
                         <label>Password</label>
                         <input type="password" name="password" required placeholder="••••••••">
                     </div>
-                    <button type="submit" class="btn" id="auth-btn">
+                    <button type="submit" class="btn">
                         {% if is_signup %}Sign Up{% else %}Sign In{% endif %}
                     </button>
-
-                    <p style="text-align: center; margin-top: 1rem; color: #64748b; font-size: 0.875rem;">
-                        <span>
-                            {% if is_signup %}Already have an account?{% else %}Don't have an account?{% endif %}
-                        </span>
-                        <a href="{% if is_signup %}{% url 'web-login' %}{% else %}{% url 'web-signup' %}{% endif %}"
-                            style="color: var(--primary-color); text-decoration: none; font-weight: 600;">
-                            {% if is_signup %}Sign In{% else %}Create one{% endif %}
-                        </a>
-                    </p>
+                    <div style="text-align:center;margin-top:1rem;color:#64748b;font-size:0.875rem;">
+                        {% if is_signup %}
+                        Already have an account? <a href="{% url 'web-login' %}"
+                            style="color:var(--primary-color);font-weight:600;">Sign In</a>
+                        {% else %}
+                        Don't have an account? <a href="{% url 'web-signup' %}"
+                            style="color:var(--primary-color);font-weight:600;">Create one</a>
+                        {% endif %}
+                    </div>
                 </form>
             </div>
         </div>

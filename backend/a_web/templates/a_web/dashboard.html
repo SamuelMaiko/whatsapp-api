@@ -15,7 +15,6 @@
     <div class="dashboard-layout">
         <aside class="sidebar">
             <div class="logo">WA<span>MANAGE</span></div>
-
             <div class="nav-section-title">Main</div>
             <nav>
                 <div class="nav-item {% if active_tab == 'sessions' or not active_tab %}active{% endif %}"
@@ -30,7 +29,6 @@
                     Sessions
                 </div>
             </nav>
-
             <div class="nav-section-title">Developers</div>
             <nav id="dev-nav">
                 <div class="nav-item {% if active_tab == 'docs' %}active{% endif %}"
@@ -43,7 +41,7 @@
                     </svg>
                     Documentation
                 </div>
-                <div class="sub-nav" id="docs-sub-nav" {% if active_tab !='docs' %}style="display: none;" {% endif %}>
+                <div class="sub-nav" id="docs-sub-nav" {% if active_tab != 'docs' %}style="display: none;" {% endif %}>
                     <div class="sub-nav-item {% if active_section == 'auth' %}active{% endif %}"
                         hx-get="{% url 'web-docs-section' 'auth' %}" hx-target="#main-content-area" hx-push-url="true"
                         onclick="setSubActive(this)">Authentication</div>
@@ -58,7 +56,6 @@
                         hx-push-url="true" onclick="setSubActive(this)">Webhooks</div>
                 </div>
             </nav>
-
             <div style="margin-top: auto;">
                 <nav>
                     <a href="{% url 'web-logout' %}" class="nav-item" style="text-decoration: none; color: inherit;">
@@ -73,7 +70,6 @@
                 </nav>
             </div>
         </aside>
-
         <main class="main-content" id="main-content-area">
             {% if active_tab == 'docs' %}
             {% include doc_template %}
@@ -82,35 +78,30 @@
             {% endif %}
         </main>
     </div>
-
     <script>
         function setActive(el) {
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
             el.classList.add('active');
             document.getElementById('docs-sub-nav').style.display = 'none';
         }
-
         function setDocActive(el) {
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
             el.classList.add('active');
             document.getElementById('docs-sub-nav').style.display = 'block';
-            // Also reset sub-nav actives
             document.querySelectorAll('.sub-nav-item').forEach(item => item.classList.remove('active'));
             document.querySelector('.sub-nav-item').classList.add('active');
         }
-
         function setSubActive(el) {
             document.querySelectorAll('.sub-nav-item').forEach(item => item.classList.remove('active'));
             el.classList.add('active');
         }
-
         function copyToClipboard(btn) {
             const pre = btn.nextElementSibling;
             const text = pre.innerText;
             navigator.clipboard.writeText(text).then(() => {
                 const originalText = btn.innerText;
                 btn.innerText = 'COPIED';
-                btn.style.background = 'var(--success-color, #10b981)';
+                btn.style.background = '#10b981';
                 btn.style.color = 'white';
                 setTimeout(() => {
                     btn.innerText = originalText;
