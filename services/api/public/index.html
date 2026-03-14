@@ -41,10 +41,12 @@
         <!-- Dashboard View -->
         <div id="dashboard-view" class="dashboard-layout" style="display: none;">
             <aside class="sidebar">
-                <div class="logo" style="color: white; text-align: left; margin-bottom: 3rem;">WA<span>MANAGE</span>
+                <div class="logo" style="color: white; text-align: left; margin-bottom: 2rem;">WA<span>MANAGE</span>
                 </div>
+
+                <div class="nav-section-title">Main</div>
                 <nav>
-                    <div class="nav-item active">
+                    <div class="nav-item active" id="nav-sessions">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2">
                             <rect x="3" y="3" width="7" height="7"></rect>
@@ -54,30 +56,62 @@
                         </svg>
                         Sessions
                     </div>
-                    <div class="nav-item" id="logout-btn">
+                </nav>
+
+                <div class="nav-section-title">Developers</div>
+                <nav>
+                    <div class="nav-item" id="nav-docs">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2">
-                            <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"></path>
-                            <polyline points="16 17 21 12 16 7"></polyline>
-                            <line x1="21" y1="12" x2="9" y2="12"></line>
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
                         </svg>
-                        Logout
+                        Documentation
+                    </div>
+                    <div id="docs-submenu" class="sub-nav" style="display: none;">
+                        <div class="sub-nav-item" data-doc="getting-started">Getting Started</div>
+                        <div class="sub-nav-item" data-doc="send-message">Send Message</div>
+                        <div class="sub-nav-item" data-doc="send-image">Send Image</div>
+                        <div class="sub-nav-item" data-doc="webhooks">Webhooks</div>
                     </div>
                 </nav>
+
+                <div style="margin-top: auto;">
+                    <nav>
+                        <div class="nav-item" id="logout-btn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"></path>
+                                <polyline points="16 17 21 12 16 7"></polyline>
+                                <line x1="21" y1="12" x2="9" y2="12"></line>
+                            </svg>
+                            Logout
+                        </div>
+                    </nav>
+                </div>
             </aside>
 
             <main class="main-content">
-                <header class="page-header">
-                    <div>
-                        <h1>Sessions</h1>
-                        <p style="color: var(--text-muted)">Manage your connected WhatsApp instances</p>
+                <!-- Sessions View -->
+                <div id="sessions-view">
+                    <header class="page-header">
+                        <div>
+                            <h1>Sessions</h1>
+                            <p style="color: var(--text-muted)">Manage your connected WhatsApp instances</p>
+                        </div>
+                        <button class="btn" style="width: auto; padding: 0.75rem 1.5rem;" id="add-session-btn">+ Add
+                            Session</button>
+                    </header>
+                    <div class="sessions-grid" id="sessions-container">
+                        <!-- Sessions will be loaded here -->
                     </div>
-                    <button class="btn" style="width: auto; padding: 0.75rem 1.5rem;" id="add-session-btn">+ Add
-                        Session</button>
-                </header>
+                </div>
 
-                <div class="sessions-grid" id="sessions-container">
-                    <!-- Sessions will be loaded here -->
+                <!-- Docs View -->
+                <div id="docs-view" style="display: none;">
+                    <div class="docs-container" id="docs-content">
+                        <!-- Documentation content will be injected here -->
+                    </div>
                 </div>
             </main>
         </div>

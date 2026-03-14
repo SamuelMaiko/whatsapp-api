@@ -7,7 +7,6 @@ import makeWASocket, {
 import P from "pino";
 import boom from "@hapi/boom";
 const { Boom } = boom;
-import qrcode from "qrcode-terminal";
 import path from "path";
 import fs from "fs";
 import axios from "axios";
@@ -19,68 +18,87 @@ const __dirname = path.dirname(__filename);
 class WhatsAppInstance {
     constructor(sessionId, options = {}) {
         this.sessionId = sessionId;
-        this.options = options; // For webhookUrl, etc.
+        this.options = options;
         this.sock = null;
         this.status = 'INIT';
         this.sessionDir = path.join(__dirname, "../../../../sessions", sessionId);
 
-        this.logger = P({ level: "silent" });
+        this.logger = P({ level: "info" }); // Increased log level for debugging
         this.onStatusChange = options.onStatusChange || (() => { });
     }
 
     async init() {
-        const { state, saveCreds } = await useMultiFileAuthState(this.sessionDir);
+        try {
+            console.log(`[${this.sessionId}] Initializing instance...`);
+            const { state, saveCreds } = await useMultiFileAuthState(this.sessionDir);
 
-        const { version, isLatest } = await fetchLatestBaileysVersion();
+            const { version } = await fetchLatestBaileysVersion();
+            console.log(`[${this.sessionId}] Using Baileys version: ${version}`);
 
-        this.sock = makeWASocket({
-            version,
-            auth: {
-                creds: state.creds,
-                keys: makeCacheableSignalKeyStore(state.keys, this.logger),
-            },
-            printQRInTerminal: false,
-            logger: this.logger,
-        });
+            this.sock = makeWASocket.default ? makeWASocket.default({
+                version,
+                auth: {
+                    creds: state.creds,
+                    keys: makeCacheableSignalKeyStore(state.keys, this.logger),
+                },
+                printQRInTerminal: true, // Also print to terminal for debugging
+                logger: this.logger,
+            }) : makeWASocket({
+                version,
+                auth: {
+                    creds: state.creds,
+                    keys: makeCacheableSignalKeyStore(state.keys, this.logger),
+                },
+                printQRInTerminal: true,
+                logger: this.logger,
+            });
 
-        this.sock.ev.on("creds.update", saveCreds);
+            this.sock.ev.on("creds.update", saveCreds);
 
-        this.sock.ev.on("connection.update", async (update) => {
-            const { connection, lastDisconnect, qr } = update;
+            this.sock.ev.on("connection.update", async (update) => {
+                const { connection, lastDisconnect, qr } = update;
+                console.log(`[${this.sessionId}] Connection Update:`, { connection, qr: !!qr });
 
-            if (qr) {
-                this.status = 'QR';
-                this.onStatusChange(this.sessionId, 'QR', { qr });
-            }
-
-            if (connection === "close") {
-                const shouldReconnect = (lastDisconnect.error instanceof Boom)
-                    ? lastDisconnect.error.output.statusCode !== DisconnectReason.loggedOut
-                    : true;
-
-                if (shouldReconnect) {
-                    this.init();
-                } else {
-                    this.status = 'DISCONNECTED';
-                    this.onStatusChange(this.sessionId, 'DISCONNECTED');
-                    this.clearSession();
+                if (qr) {
+                    this.status = 'QR';
+                    await this.onStatusChange(this.sessionId, 'QR', { qr });
                 }
-            } else if (connection === "open") {
-                this.status = 'CONNECTED';
-                this.onStatusChange(this.sessionId, 'CONNECTED');
-                console.log(`✅ Session ${this.sessionId} connected`);
-            }
-        });
 
-        this.sock.ev.on("messages.upsert", async (m) => {
-            if (m.type === "notify") {
-                for (const msg of m.messages) {
-                    if (!msg.key.fromMe) {
-                        await this.handleIncomingMessage(msg);
+                if (connection === "close") {
+                    const statusCode = (lastDisconnect?.error instanceof Boom)
+                        ? lastDisconnect.error.output.statusCode
+                        : 0;
+
+                    const shouldReconnect = statusCode !== DisconnectReason.loggedOut;
+                    console.log(`[${this.sessionId}] Connection closed. Status: ${statusCode}. Reconnect: ${shouldReconnect}`);
+
+                    if (shouldReconnect) {
+                        this.init();
+                    } else {
+                        this.status = 'DISCONNECTED';
+                        await this.onStatusChange(this.sessionId, 'DISCONNECTED');
+                        this.clearSession();
+                    }
+                } else if (connection === "open") {
+                    this.status = 'CONNECTED';
+                    await this.onStatusChange(this.sessionId, 'CONNECTED');
+                    console.log(`✅ [${this.sessionId}] Connected`);
+                }
+            });
+
+            this.sock.ev.on("messages.upsert", async (m) => {
+                if (m.type === "notify") {
+                    for (const msg of m.messages) {
+                        if (!msg.key.fromMe) {
+                            await this.handleIncomingMessage(msg);
+                        }
                     }
                 }
-            }
-        });
+            });
+
+        } catch (error) {
+            console.error(`❌ [${this.sessionId}] Init error:`, error);
+        }
 
         return this.sock;
     }
@@ -96,7 +114,7 @@ class WhatsAppInstance {
             msg.message?.imageMessage?.caption ||
             "Non-text message";
 
-        console.log(`📩 [${this.sessionId}] New message from ${pushName} (${phoneNumber}): ${text}`);
+        console.log(`📩 [${this.sessionId}] Message from ${pushName} (${phoneNumber}): ${text}`);
 
         if (this.options.webhookUrl) {
             try {
@@ -108,7 +126,7 @@ class WhatsAppInstance {
                     raw: msg
                 });
             } catch (error) {
-                console.error(`❌ Webhook error for session ${this.sessionId}:`, error.message);
+                console.error(`❌ [${this.sessionId}] Webhook error:`, error.message);
             }
         }
     }
@@ -142,7 +160,11 @@ class WhatsAppInstance {
 
     async logout() {
         if (this.sock) {
-            await this.sock.logout();
+            try {
+                await this.sock.logout();
+            } catch (err) {
+                console.error(`[${this.sessionId}] Logout error:`, err.message);
+            }
             this.clearSession();
         }
     }

@@ -1,7 +1,10 @@
 :root {
-    --primary-color: #f59e0b; /* Amber 500 */
-    --primary-hover: #d97706; /* Amber 600 */
-    --secondary-color: #1f2937; /* Dark Gray */
+    --primary-color: #f59e0b;
+    /* Amber 500 */
+    --primary-hover: #d97706;
+    /* Amber 600 */
+    --secondary-color: #1f2937;
+    /* Dark Gray */
     --bg-color: #f9fafb;
     --card-bg: #ffffff;
     --text-main: #111827;
@@ -109,84 +112,153 @@ body {
 }
 
 .sidebar {
-    width: 260px;
+    width: 280px;
     background-color: var(--secondary-color);
     color: white;
-    padding: 2rem 1.5rem;
+    padding: 2rem 1.25rem;
+    display: flex;
+    flex-direction: column;
 }
 
-.main-content {
-    flex: 1;
-    padding: 2rem;
+.nav-section-title {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 1.5rem 0 0.5rem 1rem;
+    font-weight: 700;
+}
+
+.nav-group {
+    margin-bottom: 0.5rem;
 }
 
 .nav-item {
-    padding: 0.75rem 1rem;
+    padding: 0.85rem 1rem;
     border-radius: 0.5rem;
     cursor: pointer;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.25rem;
     display: flex;
     align-items: center;
     gap: 0.75rem;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.nav-item svg {
+    opacity: 0.7;
 }
 
 .nav-item.active {
     background-color: var(--primary-color);
+    color: white;
+}
+
+.nav-item.active svg {
+    opacity: 1;
 }
 
 .nav-item:hover:not(.active) {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.05);
+    color: white;
 }
 
-.page-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
+.sub-nav {
+    margin-left: 2rem;
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    padding-left: 0.5rem;
 }
 
-.sessions-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.5rem;
+.sub-nav-item {
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    border-radius: 0.4rem;
+    transition: all 0.2s;
 }
 
-.session-card {
+.sub-nav-item:hover,
+.sub-nav-item.active {
+    color: var(--primary-color);
+    background-color: rgba(245, 158, 11, 0.05);
+}
+
+/* Documentation Styles */
+.docs-container {
+    max-width: 900px;
+    margin: 0 auto;
     background: white;
-    padding: 1.5rem;
-    border-radius: 0.75rem;
+    padding: 3rem;
+    border-radius: 1rem;
     border: 1px solid var(--border-color);
-    transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.session-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 20px -10px rgba(0, 0, 0, 0.1);
+.docs-section {
+    margin-bottom: 3rem;
 }
 
-.status-badge {
-    padding: 0.25rem 0.75rem;
-    border-radius: 9999px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-}
-
-.status-connected { background: #d1fae5; color: #065f46; }
-.status-qr { background: #fef3c7; color: #92400e; }
-.status-disconnected { background: #fee2e2; color: #991b1b; }
-
-.qr-container {
-    padding: 1rem;
+.endpoint-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
     background: #f3f4f6;
     border-radius: 0.5rem;
-    text-align: center;
-    margin-top: 1rem;
+    font-family: monospace;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
 }
 
-.qr-code {
-    width: 200px;
-    height: 200px;
-    background: white;
-    margin: 0 auto;
+.method-post {
+    color: #8b5cf6;
+}
+
+/* Purple */
+.method-get {
+    color: #10b981;
+}
+
+/* Green */
+
+.code-block {
+    background: #1e2937;
+    color: #e5e7eb;
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    font-family: 'Fira Code', 'Courier New', monospace;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    position: relative;
+    margin: 1rem 0;
+    overflow-x: auto;
+}
+
+.code-title {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 1.5rem;
+    font-weight: 600;
+}
+
+table.params-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+}
+
+table.params-table th {
+    text-align: left;
+    padding: 0.75rem;
+    background: #f9fafb;
+    border-bottom: 2px solid var(--border-color);
+    font-size: 0.85rem;
+}
+
+table.params-table td {
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.85rem;
 }
