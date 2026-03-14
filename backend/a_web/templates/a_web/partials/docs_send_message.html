@@ -1,0 +1,38 @@
+<header class="page-header">
+    <div>
+        <h1>Send Message</h1>
+        <p style="color: var(--text-muted)">Send text messages programmatically.</p>
+    </div>
+</header>
+
+<div class="docs-container"
+    style="background: white; border-radius: 12px; padding: 2.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+    <section class="docs-section">
+        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+            <span class="status-badge status-connected" style="background: #eef2ff; color: #4338ca;">POST</span>
+            <h2 style="margin: 0;">Send Message</h2>
+        </div>
+        <p>Endpoint to send a text message to a WhatsApp number.</p>
+        <code
+            style="background: var(--bg-color); padding: 0.5rem 1rem; border-radius: 6px; display: block; margin: 1rem 0;">/api/send-message/</code>
+
+        <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem;">Request Body</h4>
+        <div class="code-block">
+            <pre>{
+  "to": "254700000000",
+  "message": "Hello from WAMANAGE!"
+}</pre>
+        </div>
+
+        <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem;">Example cURL</h4>
+        <div class="code-block">
+            <pre>curl -X POST http://localhost:8000/api/send-message/ \
+-H "Authorization: Bearer YOUR_API_KEY" \
+-H "Content-Type: application/json" \
+-d '{
+  "to": "254700000000",
+  "message": "Hello World!"
+}'</pre>
+        </div>
+    </section>
+</div>

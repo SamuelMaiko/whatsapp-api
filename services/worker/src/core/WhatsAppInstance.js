@@ -11,6 +11,7 @@ import path from "path";
 import fs from "fs";
 import axios from "axios";
 import { fileURLToPath } from 'url';
+import QRCode from 'qrcode';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -61,7 +62,8 @@ class WhatsAppInstance {
 
                 if (qr) {
                     this.status = 'QR';
-                    await this.onStatusChange(this.sessionId, 'QR', { qr });
+                    const qrDataUrl = await QRCode.toDataURL(qr);
+                    await this.onStatusChange(this.sessionId, 'QR', { qr: qrDataUrl });
                 }
 
                 if (connection === "close") {

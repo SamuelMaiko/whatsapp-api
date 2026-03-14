@@ -143,4 +143,5 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 # Custom Settings
 WORKER_URL = env('WORKER_URL', default='http://localhost:4000')
+LOGIN_URL = 'web-login'
 

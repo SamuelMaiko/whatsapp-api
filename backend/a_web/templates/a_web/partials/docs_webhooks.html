@@ -1,0 +1,32 @@
+<header class="page-header">
+    <div>
+        <h1>Webhooks</h1>
+        <p style="color: var(--text-muted)">Receive real-time updates for incoming messages.</p>
+    </div>
+</header>
+
+<div class="docs-container"
+    style="background: white; border-radius: 12px; padding: 2.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+    <section class="docs-section">
+        <h2>Webhooks</h2>
+        <p>Incoming messages and status updates will be sent to the webhook URL configured on your session via POST
+            request.</p>
+        <div class="code-block"
+            style="background: #f8fafc; color: var(--text-main); border: 1px solid var(--border-color);">
+            <pre>{
+  "sessionId": "sess_123...",
+  "phoneNumber": "254700000000",
+  "pushName": "John Doe",
+  "text": "Hello!",
+  "imageUrl": null
+}</pre>
+        </div>
+
+        <p style="margin-top: 1.5rem;">The following events trigger a webhook notification:</p>
+        <ul style="margin-left: 1.5rem; margin-top: 0.5rem; color: var(--text-muted);">
+            <li>New text messages received</li>
+            <li>New image messages received (with URL)</li>
+            <li>Session status changes (QR, Connected, Disconnected)</li>
+        </ul>
+    </section>
+</div>

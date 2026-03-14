@@ -93,7 +93,7 @@ async function start() {
         await sequelize.authenticate();
         console.log("✅ Database connected.");
 
-        await sequelize.sync({ alter: true });
+        // await sequelize.sync({ alter: true });
 
         console.log("Initializing Session Manager...");
         await sessionManager.init();

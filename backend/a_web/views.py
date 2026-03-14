@@ -5,18 +5,22 @@ from a_apis.models import Session
 from django.contrib.auth import login, logout, authenticate
 
 def web_login(request):
+    if request.user.is_authenticated:
+        return redirect('web-sessions')
     if request.method == 'POST':
         email = request.POST.get('email')
         password = request.POST.get('password')
         user = authenticate(request, email=email, password=password)
         if user is not None:
             login(request, user)
-            return redirect('index')
+            return redirect('web-sessions')
         else:
-            return render(request, 'a_web/auth.html', {'error': 'Invalid credentials', 'mode': 'login'})
-    return redirect('index')
+            return render(request, 'a_web/auth.html', {'error': 'Invalid credentials', 'mode': 'login', 'is_signup': False})
+    return render(request, 'a_web/auth.html', {'mode': 'login', 'is_signup': False})
 
 def web_signup(request):
+    if request.user.is_authenticated:
+        return redirect('web-sessions')
     if request.method == 'POST':
         from a_apis.models import User
         name = request.POST.get('name')
@@ -24,17 +28,17 @@ def web_signup(request):
         password = request.POST.get('password')
         
         if User.objects.filter(email=email).exists():
-            return render(request, 'a_web/auth.html', {'error': 'Email already registered', 'mode': 'signup'})
+            return render(request, 'a_web/auth.html', {'error': 'Email already registered', 'mode': 'signup', 'is_signup': True})
             
         user = User.objects.create_user(email=email, password=password, name=name)
         login(request, user)
-        return redirect('index')
-    return redirect('index')
+        return redirect('web-sessions')
+    return render(request, 'a_web/auth.html', {'mode': 'signup', 'auth_title': 'Create an Account', 'is_signup': True})
 
 def index(request):
     if request.user.is_authenticated:
-        return render(request, 'a_web/dashboard.html', {'active_tab': 'sessions', 'sessions': Session.objects.filter(user=request.user).order_by('-createdAt')})
-    return render(request, 'a_web/auth.html')
+        return redirect('web-sessions')
+    return redirect('web-login')
 
 @login_required
 def sessions_view(request):
@@ -66,6 +70,7 @@ def create_session_view(request):
             pass
             
         return render(request, 'a_web/partials/session_card.html', {'session': session})
+    return redirect('web-sessions')
 
 @login_required
 def delete_session_view(request, pk):
@@ -84,10 +89,26 @@ def delete_session_view(request, pk):
             return HttpResponse(status=404)
 
 @login_required
-def docs_view(request):
+def docs_view(request, section=None):
+    if not section:
+        section = 'auth'
+        
+    template_map = {
+        'auth': 'a_web/partials/docs_auth.html',
+        'send-message': 'a_web/partials/docs_send_message.html',
+        'send-image': 'a_web/partials/docs_send_image.html',
+        'webhooks': 'a_web/partials/docs_webhooks.html'
+    }
+    
+    template_name = template_map.get(section, 'a_web/partials/docs_auth.html')
+    
     if request.htmx:
-        return render(request, 'a_web/partials/docs.html')
-    return render(request, 'a_web/dashboard.html', {'active_tab': 'docs'})
+        return render(request, template_name)
+    return render(request, 'a_web/dashboard.html', {
+        'active_tab': 'docs', 
+        'active_section': section,
+        'doc_template': template_name
+    })
 
 @login_required
 def update_webhook_view(request, pk):
@@ -109,6 +130,14 @@ def update_webhook_view(request, pk):
             return render(request, 'a_web/partials/session_card.html', {'session': session})
         except Session.DoesNotExist:
             return HttpResponse(status=404)
+
+@login_required
+def session_status_view(request, pk):
+    try:
+        session = Session.objects.get(id=pk, user=request.user)
+        return render(request, 'a_web/partials/session_card.html', {'session': session})
+    except Session.DoesNotExist:
+        return HttpResponse(status=404)
 
 def auth_logout(request):
     logout(request)
