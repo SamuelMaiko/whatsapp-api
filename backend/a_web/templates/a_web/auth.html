@@ -23,7 +23,7 @@
                     action="{% if mode == 'signup' %}{% url 'web-signup' %}{% else %}{% url 'web-login' %}{% endif %}">
                     {% csrf_token %}
 
-                    <div class="form-group" id="name-group" {% if mode !='signup' %}style="display: none;" {% endif %}>
+                    <div class="form-group" id="name-group" {% if mode != 'signup' %}style="display: none;" {% endif %}>
                         <label>Full Name</label>
                         <input type="text" name="name" id="name-input" placeholder="John Doe">
                     </div>
@@ -36,12 +36,10 @@
                         <label>Password</label>
                         <input type="password" name="password" required placeholder="••••••••">
                     </div>
-                    <button type="submit" class="btn" id="auth-btn">{% if mode == 'signup' %}Sign Up{% else %}Sign In{%
-                        endif %}</button>
+                    <button type="submit" class="btn" id="auth-btn">{% if mode == 'signup' %}Sign Up{% else %}Sign In{% endif %}</button>
 
                     <p style="text-align: center; margin-top: 1rem; color: #64748b; font-size: 0.875rem;">
-                        <span id="toggle-text">{% if mode == 'signup' %}Already have an account?{% else %}Don't have an
-                            account?{% endif %}</span>
+                        <span id="toggle-text">{% if mode == 'signup' %}Already have an account?{% else %}Don't have an account?{% endif %}</span>
                         <a href="#" id="toggle-auth"
                             style="color: var(--primary-color); text-decoration: none; font-weight: 600;">
                             {% if mode == 'signup' %}Sign In{% else %}Create one{% endif %}
