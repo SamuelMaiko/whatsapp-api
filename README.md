@@ -1,41 +1,40 @@
 # WAMANAGE: WhatsApp Automation Platform
 
-WAMANAGE is a robust, multi-service WhatsApp automation monorepo designed for developers. It allows you to manage multiple WhatsApp sessions, scan QR codes via a web dashboard, and interact with the WhatsApp API using standard REST endpoints and Webhooks.
+WAMANAGE is a robust, multi-service WhatsApp automation monorepo designed for developers. It allows you to manage multiple WhatsApp sessions, link devices via QR codes directly in a web dashboard, and interact with the WhatsApp API using standard REST endpoints and Webhooks.
 
 ---
 
 ## 🏗️ Repository Architecture
 
-This project is structured as a collection of independent services:
+This project is structured as a collection of independent services focusing on high performance and developer experience:
 
--   **`backend`**: The primary entry point.
-    -   **Django & DRF**: Modern Python backend replaces the old Node service.
-    -   **Web Dashboard**: Django templates with interactive JS.
-    -   **Developer Documentation**: Integrated portal for API usage.
--   **`services/worker`**: The technical core.
-    -   **Connection Management**: Maintains WhatsApp socket connections.
-    -   **Local Architecture**: Contains its own Sequelize models and database config.
-    -   **Media Handling**: Downloads and hosts incoming images.
--   **`services/webhook-tester`**: Lightweight utility for debugging webhooks.
+- **`backend`**: The primary interaction layer.
+    - **Django 5.0**: Powering the web interface and developer APIs.
+    - **Modern Dashboard**: Built with Vanilla CSS and **HTMX** for a smooth, single-page application feel without the complexity of heavy JS frameworks.
+    - **Sectional Documentation**: A dedicated portal providing separate routes for Authentication, Send Message (Text/Image), and Webhook integration.
+- **`services/worker`**: The technical core.
+    - **Baileys Library**: Maintains the WhatsApp socket connections and handles protocol logic.
+    - **QR Generation**: Real-time QR code generation with automatic conversion to Data URLs for instant UI display.
+    - **Session Persistence**: Efficiently manages multiple concurrent WhatsApp instances.
 
 ---
 
 ## 🚀 Getting Started
 
 ### 1. Prerequisites
-- **Node.js** (v18+ recommended)
+- **Node.js** (v18+)
 - **Python 3.11+**
-- **PostgreSQL** database
+- **SQLite** (Default) or PostgreSQL
 
 ### 2. Installation
-Clone the repository and install dependencies for the services you need:
 
-**API Service (Django)**
+**Backend (Django)**
 ```bash
 cd backend
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
+python manage.py migrate
 ```
 
 **Worker Service (Node.js)**
@@ -44,69 +43,39 @@ cd services/worker
 npm install
 ```
 
-### 3. Environment Setup
-Create a `.env` file in the root directory (or individual service directories if preferred). The following variables are required:
+### 3. Running the Application
 
-```env
-# Database Configuration
-DB_NAME=whatsapp_api
-DB_USER=postgres
-DB_PASSWORD=your_password
-DB_HOST=localhost
-DB_PORT=5432
-
-# Security
-JWT_SECRET=your_super_secret_jwt_key
-
-# Service URLs
-WORKER_URL=http://localhost:4000
-API_URL=http://localhost:3000
-```
-
-### 4. Database Setup
-Ensure you have created the database specified in `DB_NAME`. The services will automatically synchronize the tables on startup.
-
-### 5. Running the Application
-You need to run both the **API** and the **Worker** for the platform to function. Open two terminal tabs:
-
-**Tab 1: API Service (Port 3000)**
+**Tab 1: Backend (Port 8000)**
 ```bash
-cd services/api
-npm start
+cd backend
+python manage.py runserver
 ```
 
 **Tab 2: Worker Service (Port 4000)**
 ```bash
 cd services/worker
-npm start
+npm run dev
 ```
 
 ---
 
 ## 🛠️ Usage Flow
 
-1.  **Register/Login**: Access the dashboard at `http://localhost:3000`.
-2.  **Create Session**: Click "Add Session" to generate a new instance.
-3.  **Scan QR**: Wait for the QR code to appear and scan it with your WhatsApp mobile app.
-4.  **Get API Key**: Once connected, click "Show" on the API Key section.
-5.  **Setup Webhooks**: Input your destination URL in the Webhook field and click **Save**.
-6.  **Start Automating**: Use the **Documentation** tab in the dashboard for interactive code examples and CURL commands.
-
----
-
-## 🧪 Testing Webhooks
-If you want to test incoming messages locally, we have included a tester service:
-```bash
-node services/webhook-tester/index.js
-```
-Then set your session webhook to `http://localhost:5000/webhook` in the dashboard.
+1.  **Authentication**: Access the dashboard at `http://localhost:8000`. Create an account or sign in.
+2.  **Create Session**: Click **+ Add Session** to initialize a new WhatsApp engine instance.
+3.  **Scan QR**: The session card will poll for status and display a QR code automatically. Scan it with your WhatsApp mobile app (Linked Devices).
+4.  **API Integration**:
+    -   Once status shows **CONNECTED**, your unique **API Key** becomes available.
+    -   Configure your **Webhook URL** to receive real-time POST notifications for incoming messages.
+5.  **Documentation**: Use the **Documentation** sidebar to access specific guides. Every code snippet includes a **COPY** button for rapid integration.
 
 ---
 
 ## 📜 Key Features
-- ✅ Multi-session support.
-- ✅ QR Code generation and real-time status updates.
-- ✅ Bearer Token authentication for developer APIs.
-- ✅ Automatic image downloading for incoming messages.
-- ✅ Forwarded and View-Once message support.
-- ✅ Beautifully formatted Markdown/JSON documentation portal.
+
+- ✅ **Multi-session Management**: Run and monitor multiple WhatsApp accounts simultaneously.
+- ✅ **HTMX-Powered UI**: Lightning-fast, reactive dashboard with minimal client-side overhead.
+- ✅ **Real-time Status Polling**: Automatic UI updates for connection states and QR codes.
+- ✅ **Section-Based Documentation**: Clean, organized API routes with interactive copy functionality.
+- ✅ **Webhook Support**: Receive incoming messages with session IDs and message metadata in JSON format.
+- ✅ **Premium Aesthetics**: Professional dark/light mode UI with modern typography and animations.
