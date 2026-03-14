@@ -16,6 +16,11 @@ async function start() {
         await sequelize.sync({ alter: true });
         console.log("✅ Models synced.");
 
+        console.log("Initializing Session Manager...");
+        const sessionManager = require("./core/SessionManager");
+        await sessionManager.init();
+        console.log("✅ Session Manager ready.");
+
         app.listen(PORT, () => {
             console.log(`🚀 Server running on http://localhost:${PORT}`);
         });
