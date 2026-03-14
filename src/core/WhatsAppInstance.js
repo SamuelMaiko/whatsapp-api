@@ -19,6 +19,12 @@ class WhatsAppInstance {
         this.sock = null;
         this.status = 'INIT';
         this.sessionDir = path.join(__dirname, "../../sessions", sessionId);
+
+        // Ensure session directory exists
+        if (!fs.existsSync(path.join(__dirname, "../../sessions"))) {
+            fs.mkdirSync(path.join(__dirname, "../../sessions"), { recursive: true });
+        }
+
         this.logger = P({ level: "silent" });
         this.onStatusChange = options.onStatusChange || (() => { });
     }
