@@ -5,9 +5,9 @@ import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-import sequelize from "../shared/config/database.js";
-import User from "../shared/models/User.js";
-import Session from "../shared/models/Session.js";
+import sequelize from "../config/database.js";
+import User from "../models/User.js";
+import Session from "../models/Session.js";
 import sessionManager from "./core/SessionManager.js";
 import dotenv from "dotenv";
 dotenv.config();

@@ -1,5 +1,5 @@
 import WhatsAppInstance from './WhatsAppInstance.js';
-import Session from "../../shared/models/Session.js";
+import Session from "../../models/Session.js";
 
 class SessionManager {
     constructor() {
