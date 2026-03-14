@@ -13,7 +13,22 @@ def web_login(request):
             login(request, user)
             return redirect('index')
         else:
-            return render(request, 'a_web/auth.html', {'error': 'Invalid credentials'})
+            return render(request, 'a_web/auth.html', {'error': 'Invalid credentials', 'mode': 'login'})
+    return redirect('index')
+
+def web_signup(request):
+    if request.method == 'POST':
+        from a_apis.models import User
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        
+        if User.objects.filter(email=email).exists():
+            return render(request, 'a_web/auth.html', {'error': 'Email already registered', 'mode': 'signup'})
+            
+        user = User.objects.create_user(email=email, password=password, name=name)
+        login(request, user)
+        return redirect('index')
     return redirect('index')
 
 def index(request):

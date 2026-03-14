@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import (
-    index, web_login, sessions_view, docs_view, 
+    index, web_login, web_signup, sessions_view, docs_view, 
     create_session_view, delete_session_view, 
     update_webhook_view, auth_logout
 )
@@ -8,6 +8,7 @@ from .views import (
 urlpatterns = [
     path('', index, name='index'),
     path('login/', web_login, name='web-login'),
+    path('signup/', web_signup, name='web-signup'),
     path('dashboard/sessions/', sessions_view, name='web-sessions'),
     path('dashboard/docs/', docs_view, name='web-docs'),
     path('dashboard/sessions/create/', create_session_view, name='web-session-create'),

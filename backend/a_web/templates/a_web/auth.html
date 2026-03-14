@@ -19,8 +19,15 @@
                 {% if error %}
                 <p style="color: red; text-align: center; margin-bottom: 1rem;">{{ error }}</p>
                 {% endif %}
-                <form id="auth-form" method="POST" action="{% url 'web-login' %}">
+                <form id="auth-form" method="POST"
+                    action="{% if mode == 'signup' %}{% url 'web-signup' %}{% else %}{% url 'web-login' %}{% endif %}">
                     {% csrf_token %}
+
+                    <div class="form-group" id="name-group" {% if mode !='signup' %}style="display: none;" {% endif %}>
+                        <label>Full Name</label>
+                        <input type="text" name="name" id="name-input" placeholder="John Doe">
+                    </div>
+
                     <div class="form-group">
                         <label>Email Address</label>
                         <input type="email" name="email" required placeholder="name@company.com">
@@ -29,14 +36,56 @@
                         <label>Password</label>
                         <input type="password" name="password" required placeholder="••••••••">
                     </div>
-                    <button type="submit" class="btn" id="auth-btn">Sign In</button>
+                    <button type="submit" class="btn" id="auth-btn">{% if mode == 'signup' %}Sign Up{% else %}Sign In{%
+                        endif %}</button>
+
                     <p style="text-align: center; margin-top: 1rem; color: #64748b; font-size: 0.875rem;">
-                        To create an account, please use the API endpoint.
+                        <span id="toggle-text">{% if mode == 'signup' %}Already have an account?{% else %}Don't have an
+                            account?{% endif %}</span>
+                        <a href="#" id="toggle-auth"
+                            style="color: var(--primary-color); text-decoration: none; font-weight: 600;">
+                            {% if mode == 'signup' %}Sign In{% else %}Create one{% endif %}
+                        </a>
                     </p>
                 </form>
             </div>
         </div>
     </div>
+
+    <script>
+        const toggleBtn = document.getElementById('toggle-auth');
+        const authForm = document.getElementById('auth-form');
+        const authTitle = document.getElementById('auth-title');
+        const nameGroup = document.getElementById('name-group');
+        const nameInput = document.getElementById('name-input');
+        const authBtn = document.getElementById('auth-btn');
+        const toggleText = document.getElementById('toggle-text');
+
+        let isLogin = "{{ mode }}" !== "signup";
+
+        toggleBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            isLogin = !isLogin;
+
+            if (isLogin) {
+                authTitle.innerText = 'Welcome Back';
+                authForm.action = "{% url 'web-login' %}";
+                nameGroup.style.display = 'none';
+                nameInput.removeAttribute('required');
+                authBtn.innerText = 'Sign In';
+                toggleText.innerText = "Don't have an account?";
+                toggleBtn.innerText = 'Create one';
+            } else {
+                authTitle.innerText = 'Create an Account';
+                authForm.action = "{% url 'web-signup' %}";
+                nameGroup.style.display = 'block';
+                nameInput.setAttribute('required', 'true');
+                authBtn.innerText = 'Sign Up';
+                toggleText.innerText = 'Already have an account?';
+                toggleBtn.innerText = 'Sign In';
+            }
+        });
+    </script>
 </body>
 
 </html>
