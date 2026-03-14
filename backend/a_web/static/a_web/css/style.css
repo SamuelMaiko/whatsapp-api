@@ -601,8 +601,9 @@ body {
 /* Green */
 
 .code-block {
-    background: #1e2937;
-    color: #e5e7eb;
+    background: #f8fafc;
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
     padding: 1.5rem;
     border-radius: 0.75rem;
     font-family: 'Fira Code', 'Courier New', monospace;
@@ -617,9 +618,10 @@ body {
     position: absolute;
     top: 0.5rem;
     right: 0.5rem;
-    background: rgba(255, 255, 255, 0.1);
+    background: #f1f5f9;
     color: var(--text-muted);
     padding: 0.25rem 0.5rem;
+    border: 1px solid var(--border-color);
     border-radius: 0.4rem;
     font-size: 0.7rem;
     cursor: pointer;

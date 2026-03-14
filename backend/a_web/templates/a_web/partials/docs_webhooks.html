@@ -11,15 +11,17 @@
         <h2>Webhooks</h2>
         <p>Incoming messages and status updates will be sent to the webhook URL configured on your session via POST
             request.</p>
-        <div class="code-block"
-            style="background: #f8fafc; color: var(--text-main); border: 1px solid var(--border-color);">
+        <p style="margin-top: 1.5rem; color: var(--text-muted); font-size: 0.9rem;">Sample message posted to the
+            configured webhook:</p>
+        <div class="code-block">
             <div class="copy-trigger" onclick="copyToClipboard(this)">COPY</div>
             <pre>{
   "sessionId": "sess_123...",
   "phoneNumber": "254700000000",
   "pushName": "John Doe",
   "text": "Hello!",
-  "imageUrl": null
+  "imageUrl": null,
+  "key": {}
 }</pre>
         </div>
 
