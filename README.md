@@ -6,7 +6,7 @@ WAMANAGE is a robust, multi-service WhatsApp automation monorepo designed for de
 
 ## 🏗️ Repository Architecture
 
-This project is structured as a Node.js monorepo using **NPM Workspaces**:
+This project is structured as a collection of independent services:
 
 -   **`services/api`**: The primary entry point.
     -   **Django & DRF**: Modern Python backend replaces the old Node service.
@@ -14,7 +14,7 @@ This project is structured as a Node.js monorepo using **NPM Workspaces**:
     -   **Developer Documentation**: Integrated portal for API usage.
 -   **`services/worker`**: The technical core.
     -   **Connection Management**: Maintains WhatsApp socket connections.
-    -   **Internal Shared Logic**: Contains the Sequelize models and database config locally.
+    -   **Local Architecture**: Contains its own Sequelize models and database config.
     -   **Media Handling**: Downloads and hosts incoming images.
 -   **`services/webhook-tester`**: Lightweight utility for debugging webhooks.
 
@@ -24,15 +24,23 @@ This project is structured as a Node.js monorepo using **NPM Workspaces**:
 
 ### 1. Prerequisites
 - **Node.js** (v18+ recommended)
+- **Python 3.11+**
 - **PostgreSQL** database
-- **NPM** (v7+ for workspaces support)
 
 ### 2. Installation
-Clone the repository and install all dependencies from the root directory:
+Clone the repository and install dependencies for the services you need:
 
+**API Service (Django)**
 ```bash
-git clone <your-repo-url>
-cd WhatsappAPI
+cd services/api
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+**Worker Service (Node.js)**
+```bash
+cd services/worker
 npm install
 ```
 
