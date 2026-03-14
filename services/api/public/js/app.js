@@ -1,5 +1,5 @@
 const API_URL = '/api';
-let token = localStorage.getItem('token');
+let apiKey = localStorage.getItem('apiKey');
 let user = JSON.parse(localStorage.getItem('user'));
 let isLogin = true;
 
@@ -12,7 +12,7 @@ const addSessionBtn = document.getElementById('add-session-btn');
 const logoutBtn = document.getElementById('logout-btn');
 
 // Initialize
-if (token) {
+if (apiKey) {
     showDashboard();
 }
 
@@ -45,9 +45,9 @@ authForm.addEventListener('submit', async (e) => {
 
         if (data.success) {
             if (isLogin) {
-                token = data.token;
+                apiKey = data.apiKey;
                 user = data.user;
-                localStorage.setItem('token', token);
+                localStorage.setItem('apiKey', apiKey);
                 localStorage.setItem('user', JSON.stringify(user));
                 showDashboard();
             } else {
@@ -66,16 +66,27 @@ authForm.addEventListener('submit', async (e) => {
 function showDashboard() {
     authView.style.display = 'none';
     dashboardView.style.display = 'flex';
+
+    // Display API Key in a dedicated area
+    const apiKeyDisplay = document.getElementById('api-key-display');
+    if (apiKeyDisplay) {
+        apiKeyDisplay.innerText = apiKey;
+    }
+
     loadSessions();
 }
 
 async function loadSessions() {
     try {
         const res = await fetch(`${API_URL}/sessions`, {
-            headers: { 'Authorization': `Bearer ${token}` }
+            headers: { 'x-api-key': apiKey }
         });
         const data = await res.json();
-        renderSessions(data.sessions);
+        if (data.success) {
+            renderSessions(data.sessions);
+        } else if (data.error && data.error.includes('Auth Error')) {
+            logout();
+        }
     } catch (err) {
         console.error(err);
     }
@@ -124,7 +135,7 @@ addSessionBtn.addEventListener('click', async () => {
         const res = await fetch(`${API_URL}/sessions`, {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${token}`,
+                'x-api-key': apiKey,
                 'Content-Type': 'application/json'
             }
         });
@@ -143,7 +154,7 @@ async function updateWebhook(sessionId) {
         const res = await fetch(`${API_URL}/sessions/webhook`, {
             method: 'PATCH',
             headers: {
-                'Authorization': `Bearer ${token}`,
+                'x-api-key': apiKey,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({ sessionId, webhookUrl: url })
@@ -160,7 +171,7 @@ async function deleteSession(sessionId) {
     try {
         const res = await fetch(`${API_URL}/sessions/${sessionId}`, {
             method: 'DELETE',
-            headers: { 'Authorization': `Bearer ${token}` }
+            headers: { 'x-api-key': apiKey }
         });
         const data = await res.json();
         if (data.success) loadSessions();
@@ -171,11 +182,13 @@ async function deleteSession(sessionId) {
 
 // Auto-refresh sessions every 5 seconds to get status/QR updates
 setInterval(() => {
-    if (token) loadSessions();
+    if (apiKey) loadSessions();
 }, 5000);
 
-logoutBtn.addEventListener('click', () => {
-    localStorage.removeItem('token');
+function logout() {
+    localStorage.removeItem('apiKey');
     localStorage.removeItem('user');
     window.location.reload();
-});
+}
+
+logoutBtn.addEventListener('click', logout);
