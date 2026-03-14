@@ -1,16 +1,20 @@
-const {
-    default: makeWASocket,
+import makeWASocket, {
     useMultiFileAuthState,
     DisconnectReason,
     fetchLatestBaileysVersion,
     makeCacheableSignalKeyStore
-} = require("@whiskeysockets/baileys");
-const P = require("pino");
-const { Boom } = require("@hapi/boom");
-const qrcode = require("qrcode-terminal");
-const path = require("path");
-const fs = require("fs");
-const axios = require("axios");
+} from "@whiskeysockets/baileys";
+import P from "pino";
+import boom from "@hapi/boom";
+const { Boom } = boom;
+import qrcode from "qrcode-terminal";
+import path from "path";
+import fs from "fs";
+import axios from "axios";
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 class WhatsAppInstance {
     constructor(sessionId, options = {}) {
@@ -18,12 +22,7 @@ class WhatsAppInstance {
         this.options = options; // For webhookUrl, etc.
         this.sock = null;
         this.status = 'INIT';
-        this.sessionDir = path.join(__dirname, "../../sessions", sessionId);
-
-        // Ensure session directory exists
-        if (!fs.existsSync(path.join(__dirname, "../../sessions"))) {
-            fs.mkdirSync(path.join(__dirname, "../../sessions"), { recursive: true });
-        }
+        this.sessionDir = path.join(__dirname, "../../../sessions", sessionId);
 
         this.logger = P({ level: "silent" });
         this.onStatusChange = options.onStatusChange || (() => { });
@@ -52,7 +51,6 @@ class WhatsAppInstance {
             if (qr) {
                 this.status = 'QR';
                 this.onStatusChange(this.sessionId, 'QR', { qr });
-                // We don't print in terminal here, the UI will handle it
             }
 
             if (connection === "close") {
@@ -74,12 +72,11 @@ class WhatsAppInstance {
             }
         });
 
-        // Listen for incoming messages
         this.sock.ev.on("messages.upsert", async (m) => {
             if (m.type === "notify") {
                 for (const msg of m.messages) {
                     if (!msg.key.fromMe) {
-                        this.handleIncomingMessage(msg);
+                        await this.handleIncomingMessage(msg);
                     }
                 }
             }
@@ -101,7 +98,6 @@ class WhatsAppInstance {
 
         console.log(`📩 [${this.sessionId}] New message from ${pushName} (${phoneNumber}): ${text}`);
 
-        // Webhook trigger
         if (this.options.webhookUrl) {
             try {
                 await axios.post(this.options.webhookUrl, {
@@ -152,4 +148,4 @@ class WhatsAppInstance {
     }
 }
 
-module.exports = WhatsAppInstance;
+export default WhatsAppInstance;

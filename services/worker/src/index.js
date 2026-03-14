@@ -1,9 +1,10 @@
-const express = require('express');
-const sequelize = require("../../../shared/config/database");
-require("../../../shared/models/User");
-require("../../../shared/models/Session");
-const sessionManager = require("./core/SessionManager");
-require("dotenv").config();
+import express from 'express';
+import sequelize from "../../../shared/config/database.js";
+import User from "../../../shared/models/User.js";
+import Session from "../../../shared/models/Session.js";
+import sessionManager from "./core/SessionManager.js";
+import dotenv from "dotenv";
+dotenv.config();
 
 const app = express();
 app.use(express.json());

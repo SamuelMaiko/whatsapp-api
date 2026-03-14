@@ -1,9 +1,9 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const authController = require('../controllers/auth.controller');
-const sessionController = require('../controllers/session.controller');
-const auth = require('../middleware/auth');
-const whatsappService = require('../services/whatsapp.service');
+import * as authController from '../controllers/auth.controller.js';
+import * as sessionController from '../controllers/session.controller.js';
+import auth from '../middleware/auth.js';
+import whatsappService from '../services/whatsapp.service.js';
 
 // Auth routes
 router.post('/register', authController.register);
@@ -36,4 +36,4 @@ router.post('/send-image', auth, async (req, res) => {
     }
 });
 
-module.exports = router;
+export default router;

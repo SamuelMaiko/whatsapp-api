@@ -1,7 +1,11 @@
-const express = require("express");
-const cors = require("cors");
-const path = require("path");
-const apiRoutes = require("./routes/api");
+import express from "express";
+import cors from "cors";
+import path from "path";
+import { fileURLToPath } from 'url';
+import apiRoutes from "./routes/api.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 
@@ -19,4 +23,4 @@ app.get("/health", (req, res) => {
 // API Routes
 app.use("/api", apiRoutes);
 
-module.exports = app;
+export default app;

@@ -1,7 +1,7 @@
-const User = require('../../../../shared/models/User');
-const jwt = require('jsonwebtoken');
+import User from '../../../../shared/models/User.js';
+import jwt from 'jsonwebtoken';
 
-exports.register = async (req, res) => {
+export const register = async (req, res) => {
     try {
         const { email, password, name } = req.body;
         const user = await User.create({ email, password, name });
@@ -11,7 +11,7 @@ exports.register = async (req, res) => {
     }
 };
 
-exports.login = async (req, res) => {
+export const login = async (req, res) => {
     try {
         const { email, password } = req.body;
         const user = await User.findOne({ where: { email } });

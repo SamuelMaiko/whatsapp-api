@@ -1,9 +1,9 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database');
+import { DataTypes } from 'sequelize';
+import sequelize from '../config/database.js';
 
 const Session = sequelize.define('Session', {
     id: {
-        type: DataTypes.STRING, // This will be our unique session identifier (e.g., 'session_123')
+        type: DataTypes.STRING,
         primaryKey: true
     },
     userId: {
@@ -31,4 +31,4 @@ const Session = sequelize.define('Session', {
     }
 });
 
-module.exports = Session;
+export default Session;

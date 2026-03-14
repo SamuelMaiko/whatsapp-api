@@ -1,8 +1,9 @@
-const app = require("./app");
-const sequelize = require("../../../shared/config/database");
-require("../../../shared/models/User");
-require("../../../shared/models/Session");
-require("dotenv").config();
+import app from "./app.js";
+import sequelize from "../../../shared/config/database.js";
+import User from "../../../shared/models/User.js";
+import Session from "../../../shared/models/Session.js";
+import dotenv from "dotenv";
+dotenv.config();
 
 const PORT = process.env.PORT || 3000;
 
@@ -13,6 +14,7 @@ async function start() {
         console.log("✅ Database connected.");
 
         console.log("Syncing Models...");
+        // Ensure both models are loaded for sync
         await sequelize.sync({ alter: true });
         console.log("✅ Models synced.");
 

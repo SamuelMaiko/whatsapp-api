@@ -1,5 +1,5 @@
-const WhatsAppInstance = require('./WhatsAppInstance');
-const Session = require('../../../../shared/models/Session');
+import WhatsAppInstance from './WhatsAppInstance.js';
+import Session from '../../../../shared/models/Session.js';
 
 class SessionManager {
     constructor() {
@@ -49,4 +49,4 @@ class SessionManager {
     }
 }
 
-module.exports = new SessionManager();
+export default new SessionManager();
