@@ -9,15 +9,14 @@ WAMANAGE is a robust, multi-service WhatsApp automation monorepo designed for de
 This project is structured as a Node.js monorepo using **NPM Workspaces**:
 
 -   **`services/api`**: The primary entry point.
-    -   **Web Dashboard**: A modern, interactive interface for managing sessions.
-    -   **Developer Documentation**: An integrated portal explaining how to use the API.
-    -   **Authentication**: JWT-based auth for the dashboard and API Key auth for external developers.
+    -   **Django & DRF**: Modern Python backend replaces the old Node service.
+    -   **Web Dashboard**: Django templates with interactive JS.
+    -   **Developer Documentation**: Integrated portal for API usage.
 -   **`services/worker`**: The technical core.
-    -   **Connection Management**: Uses `@whiskeysockets/baileys` to maintain real-time WhatsApp socket connections.
-    -   **Media Handling**: Automatically downloads incoming images and hosts them locally.
-    -   **Webhook Dispatcher**: Forwards incoming messages (Text/Images) to registered URLs.
--   **`services/webhook-tester`**: A lightweight utility for developers to test and debug incoming webhooks.
--   **`shared/`**: Contains shared logic, including Sequelize models and database configurations used across all services.
+    -   **Connection Management**: Maintains WhatsApp socket connections.
+    -   **Internal Shared Logic**: Contains the Sequelize models and database config locally.
+    -   **Media Handling**: Downloads and hosts incoming images.
+-   **`services/webhook-tester`**: Lightweight utility for debugging webhooks.
 
 ---
 
