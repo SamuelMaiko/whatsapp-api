@@ -13,10 +13,7 @@ import sessionManager from "./core/SessionManager.js";
 import dotenv from "dotenv";
 dotenv.config();
 
-const app = express();
-app.use(express.json());
 
-// Serve media files
 const workerPublicPath = path.join(__dirname, "../public");
 if (!fs.existsSync(workerPublicPath)) {
     fs.mkdirSync(workerPublicPath, { recursive: true });
