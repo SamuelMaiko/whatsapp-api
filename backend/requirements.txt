@@ -13,3 +13,6 @@ PyJWT==2.12.1
 requests==2.32.5
 sqlparse==0.5.5
 urllib3==2.6.3
+django-htmx==1.22.0
+gunicorn==23.0.0
+whitenoise==6.9.0
