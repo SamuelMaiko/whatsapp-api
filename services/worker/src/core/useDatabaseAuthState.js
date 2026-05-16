@@ -5,16 +5,14 @@ export const useDatabaseAuthState = async (sessionId) => {
     const writeData = async (data, id) => {
         try {
             const dataString = JSON.stringify(data, BufferJSON.replacer);
-            // Upsert equivalent for composite keys
-            const [record, created] = await AuthData.findOrCreate({
-                where: { sessionId, id },
-                defaults: { data: dataString }
+            // Use native upsert for better performance
+            await AuthData.upsert({
+                sessionId,
+                id,
+                data: dataString
             });
-            if (!created) {
-                await record.update({ data: dataString });
-            }
         } catch (error) {
-             console.error(`Error saving auth data for ${id}:`, error);
+            console.error(`Error saving auth data for ${id}:`, error);
         }
     };
 
