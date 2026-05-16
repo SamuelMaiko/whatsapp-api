@@ -71,3 +71,20 @@ export const useDatabaseAuthState = async (sessionId) => {
                             tasks.push(value ? writeData(value, key) : removeData(key));
                         }
                     }
+                    await Promise.all(tasks);
+                }
+            }
+        },
+        saveCreds: () => {
+            return writeData(creds, 'creds');
+        }
+    };
+};
+
+export const clearDatabaseAuthState = async (sessionId) => {
+    try {
+        await AuthData.destroy({ where: { sessionId } });
+    } catch (error) {
+        console.error(`Error clearing auth data for session ${sessionId}:`, error);
+    }
+};
