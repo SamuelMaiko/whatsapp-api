@@ -11,10 +11,7 @@ const Session = sequelize.define('Session', {
         type: DataTypes.UUID,
         allowNull: false
     },
-    status: {
-        type: DataTypes.ENUM('INIT', 'QR', 'CONNECTED', 'DISCONNECTED'),
-        defaultValue: 'INIT'
-    },
+
     apiKey: {
         type: DataTypes.STRING,
         unique: true
