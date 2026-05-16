@@ -1,9 +1,9 @@
 import makeWASocket, {
-    useMultiFileAuthState,
     DisconnectReason,
     fetchLatestBaileysVersion,
     makeCacheableSignalKeyStore
 } from "@whiskeysockets/baileys";
+import { useDatabaseAuthState, clearDatabaseAuthState } from "./useDatabaseAuthState.js";
 import P from "pino";
 import boom from "@hapi/boom";
 const { Boom } = boom;
@@ -22,7 +22,7 @@ class WhatsAppInstance {
         this.options = options;
         this.sock = null;
         this.status = 'INIT';
-        this.sessionDir = path.join(__dirname, "../../../../sessions", sessionId);
+        this.status = 'INIT';
 
         this.logger = P({ level: "info" }); // Increased log level for debugging
         this.onStatusChange = options.onStatusChange || (() => { });
@@ -31,7 +31,7 @@ class WhatsAppInstance {
     async init() {
         try {
             console.log(`[${this.sessionId}] Initializing instance...`);
-            const { state, saveCreds } = await useMultiFileAuthState(this.sessionDir);
+            const { state, saveCreds } = await useDatabaseAuthState(this.sessionId);
 
             const { version } = await fetchLatestBaileysVersion();
             console.log(`[${this.sessionId}] Using Baileys version: ${version}`);
@@ -205,10 +205,8 @@ class WhatsAppInstance {
         });
     }
 
-    clearSession() {
-        if (fs.existsSync(this.sessionDir)) {
-            fs.rmSync(this.sessionDir, { recursive: true, force: true });
-        }
+    async clearSession() {
+        await clearDatabaseAuthState(this.sessionId);
     }
 
     async logout() {
@@ -218,7 +216,7 @@ class WhatsAppInstance {
             } catch (err) {
                 console.error(`[${this.sessionId}] Logout error:`, err.message);
             }
-            this.clearSession();
+            await this.clearSession();
         }
     }
 }

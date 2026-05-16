@@ -8,6 +8,7 @@ const __dirname = path.dirname(__filename);
 import sequelize from "../config/database.js";
 import User from "../models/User.js";
 import Session from "../models/Session.js";
+import AuthData from "../models/AuthData.js";
 import sessionManager from "./core/SessionManager.js";
 import dotenv from "dotenv";
 dotenv.config();
@@ -93,7 +94,7 @@ async function start() {
         await sequelize.authenticate();
         console.log("✅ Database connected.");
 
-        // await sequelize.sync({ alter: true });
+        await sequelize.sync({ alter: true });
 
         console.log("Initializing Session Manager...");
         await sessionManager.init();
