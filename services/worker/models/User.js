@@ -11,10 +11,7 @@ const User = sequelize.define('User', {
     email: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
-        validate: {
-            isEmail: true
-        }
+        unique: true
     },
     password: {
         type: DataTypes.STRING,
@@ -23,12 +20,34 @@ const User = sequelize.define('User', {
     name: {
         type: DataTypes.STRING,
         allowNull: false
+    },
+    last_login: {
+        type: DataTypes.DATE,
+        allowNull: true
+    },
+    is_superuser: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
+    },
+    is_staff: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
+    },
+    is_active: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true
     }
 }, {
+    tableName: 'Users',
+    timestamps: true,
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
     hooks: {
         beforeCreate: async (user) => {
-            const salt = await bcrypt.genSalt(10);
-            user.password = await bcrypt.hash(user.password, salt);
+            if (user.password && !user.password.startsWith('$2')) {
+                const salt = await bcrypt.genSalt(10);
+                user.password = await bcrypt.hash(user.password, salt);
+            }
         }
     }
 });
