@@ -13,6 +13,13 @@ import sessionManager from "./core/SessionManager.js";
 import dotenv from "dotenv";
 dotenv.config();
 
+const app = express();
+app.use(express.json());
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+    res.json({ status: 'alive', service: 'whatsapp-worker' });
+});
 
 const workerPublicPath = path.join(__dirname, "../public");
 if (!fs.existsSync(workerPublicPath)) {
