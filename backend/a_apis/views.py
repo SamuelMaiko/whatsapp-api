@@ -11,6 +11,11 @@ from .authentication import ApiKeyAuthentication
 import requests
 import time
 
+class HealthCheckView(APIView):
+    permission_classes = [AllowAny]
+    def get(self, request):
+        return Response({"status": "alive", "service": "django-backend"})
+
 class RegisterView(APIView):
     permission_classes = [AllowAny]
 
