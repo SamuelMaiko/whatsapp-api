@@ -4,6 +4,7 @@ import makeWASocket, {
     makeCacheableSignalKeyStore
 } from "@whiskeysockets/baileys";
 import { useDatabaseAuthState, clearDatabaseAuthState } from "./useDatabaseAuthState.js";
+import { uploadToCloudinary } from "./cloudinary.js";
 import P from "pino";
 import boom from "@hapi/boom";
 const { Boom } = boom;
@@ -133,10 +134,10 @@ class WhatsAppInstance {
 
         let imageUrl = null;
 
-        // Handle Image Messages
-        if (actualMessage.imageMessage) {
+        // Handle Image/Video Messages
+        if (actualMessage.imageMessage || actualMessage.videoMessage) {
             try {
-                console.log(`[${this.sessionId}] Downloading media from ${pushName}...`);
+                console.log(`[${this.sessionId}] Uploading media to Cloudinary from ${pushName}...`);
                 const { downloadMediaMessage } = await import('@whiskeysockets/baileys');
                 const buffer = await downloadMediaMessage(
                     msg,
@@ -148,21 +149,10 @@ class WhatsAppInstance {
                     }
                 );
 
-                const filename = `${this.sessionId}_${Date.now()}.jpg`;
-                const mediaDir = path.join(__dirname, "../../public", "media");
-
-                if (!fs.existsSync(mediaDir)) {
-                    fs.mkdirSync(mediaDir, { recursive: true });
-                }
-
-                const filePath = path.join(mediaDir, filename);
-                fs.writeFileSync(filePath, buffer);
-
-                const host = process.env.BASE_URL || 'http://localhost:4000';
-                imageUrl = `${host}/media/${filename}`;
-                console.log(`[${this.sessionId}] Image saved: ${imageUrl}`);
+                imageUrl = await uploadToCloudinary(buffer, `whatsapp/${this.sessionId}`);
+                console.log(`[${this.sessionId}] Media uploaded: ${imageUrl}`);
             } catch (err) {
-                console.error(`❌ [${this.sessionId}] Error downloading media:`, err.message);
+                console.error(`❌ [${this.sessionId}] Error uploading media:`, err.message);
             }
         }
 

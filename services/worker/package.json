@@ -19,7 +19,8 @@
         "pino": "^10.3.1",
         "qrcode": "^1.5.4",
         "qrcode-terminal": "^0.12.0",
-        "sequelize": "^6.33.0"
+        "sequelize": "^6.33.0",
+        "cloudinary": "^2.0.0"
     },
     "devDependencies": {
         "nodemon": "^3.0.1"
