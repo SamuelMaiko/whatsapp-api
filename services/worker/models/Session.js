@@ -7,7 +7,10 @@ const Session = sequelize.define('Session', {
         type: DataTypes.STRING,
         primaryKey: true
     },
-
+    userId: {
+        type: DataTypes.UUID,
+        allowNull: true
+    },
     status: {
         type: DataTypes.STRING,
         defaultValue: 'INIT'
