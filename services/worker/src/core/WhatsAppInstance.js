@@ -107,9 +107,12 @@ class WhatsAppInstance {
     }
 
     async handleIncomingMessage(msg) {
+        console.log(`[DEBUG msg.key]`, JSON.stringify(msg.key, null, 2));
         const jid = msg.key.remoteJid;
-        const senderJid = msg.key.remoteJidAlt || jid;
-        const phoneNumber = senderJid.split("@")[0];
+        let phoneNumber = jid.split("@")[0];
+        if (jid.endsWith("@g.us") && msg.key.participant) {
+            phoneNumber = msg.key.participant.split("@")[0];
+        }
         const pushName = msg.pushName || "Unknown";
 
         // Unwrap the message if it's nested (Forwarded View-Once, Ephemeral, etc.)
