@@ -164,6 +164,8 @@ class WhatsAppInstance {
 
         console.log(`📩 [${this.sessionId}] Message from ${pushName} (${phoneNumber}): ${text}`);
 
+        this.sendPresenceUpdate(phoneNumber, 'composing').catch(() => {});
+
         if (this.options.webhookUrl) {
             try {
                 const response = await axios.post(this.options.webhookUrl, {
@@ -182,6 +184,15 @@ class WhatsAppInstance {
                 console.error(`❌ [${this.sessionId}] Webhook error:`, error.message);
             }
         }
+    }
+
+    async sendPresenceUpdate(to, presence) {
+        if (!this.sock) return;
+        let jid = to.replace(/[^\d]/g, "");
+        if (!jid.endsWith("@s.whatsapp.net")) {
+            jid = `${jid}@s.whatsapp.net`;
+        }
+        return await this.sock.sendPresenceUpdate(presence, jid);
     }
 
     async sendMessage(to, message) {
