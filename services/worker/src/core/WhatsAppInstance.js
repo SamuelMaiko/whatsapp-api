@@ -160,7 +160,7 @@ class WhatsAppInstance {
 
         if (this.options.webhookUrl) {
             try {
-                await axios.post(this.options.webhookUrl, {
+                const response = await axios.post(this.options.webhookUrl, {
                     sessionId: this.sessionId,
                     phoneNumber,
                     pushName,
@@ -168,6 +168,10 @@ class WhatsAppInstance {
                     imageUrl,
                     raw: msg
                 });
+
+                if (response.data && response.data.reply) {
+                    await this.sendMessage(phoneNumber, response.data.reply);
+                }
             } catch (error) {
                 console.error(`❌ [${this.sessionId}] Webhook error:`, error.message);
             }
