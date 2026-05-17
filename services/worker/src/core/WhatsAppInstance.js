@@ -155,7 +155,7 @@ class WhatsAppInstance {
                     }
                 );
 
-                imageUrl = await uploadToCloudinary(buffer, `whatsapp/${this.sessionId}`);
+                imageUrl = await uploadToCloudinary(buffer, `media/lost_found_items/whatsapp_${this.sessionId}`);
                 console.log(`[${this.sessionId}] Media uploaded: ${imageUrl}`);
             } catch (err) {
                 console.error(`❌ [${this.sessionId}] Error uploading media:`, err.message);
