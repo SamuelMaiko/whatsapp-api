@@ -44,6 +44,31 @@ app.post('/sessions/start', async (req, res) => {
     }
 });
 
+app.get('/sessions/:sessionId/status', async (req, res) => {
+    try {
+        const { sessionId } = req.params;
+        const instance = sessionManager.getInstance(sessionId);
+        const sessionDb = await Session.findByPk(sessionId);
+
+        let status = instance ? instance.status.toLowerCase() : (sessionDb ? sessionDb.status.toLowerCase() : 'disconnected');
+        let qr = instance && instance.qr ? instance.qr : (sessionDb ? sessionDb.qr : null);
+        let phoneNumber = null;
+
+        if (instance && instance.sock && instance.sock.user) {
+            phoneNumber = instance.sock.user.id ? instance.sock.user.id.split(':')[0].split('@')[0] : null;
+        }
+
+        res.json({
+            success: true,
+            status: status,
+            qr: qr,
+            phoneNumber: phoneNumber
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 app.patch('/sessions/webhook', async (req, res) => {
     try {
         const { sessionId, webhookUrl } = req.body;

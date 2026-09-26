@@ -152,3 +152,46 @@ class SendImageView(APIView):
             return Response(res.json())
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+import json
+
+class WebhookReceiveView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        data = request.data
+        print("\n" + "=" * 60)
+        print("📩 [DJANGO WEBHOOK RECEIVED]")
+        print(f"Session ID : {data.get('sessionId')}")
+        print(f"From       : {data.get('pushName')} ({data.get('phoneNumber')})")
+        print(f"Text       : {data.get('text')}")
+
+        # Check for reply / contextInfo inside raw message
+        raw = data.get('raw', {})
+        msg_content = raw.get('message', {}) if isinstance(raw, dict) else {}
+
+        context_info = None
+        for key in ['extendedTextMessage', 'imageMessage', 'videoMessage', 'documentMessage', 'audioMessage']:
+            if isinstance(msg_content, dict) and key in msg_content and isinstance(msg_content[key], dict):
+                if 'contextInfo' in msg_content[key]:
+                    context_info = msg_content[key]['contextInfo']
+                    break
+
+        if context_info:
+            print("\n🔄 [REPLY / QUOTED MESSAGE DETECTED!]")
+            print(f"  ➜ Quoted Message ID (stanzaId) : {context_info.get('stanzaId')}")
+            print(f"  ➜ Quoted Participant         : {context_info.get('participant')}")
+            print(f"  ➜ Quoted Content             : {json.dumps(context_info.get('quotedMessage'), indent=2, default=str)}")
+        else:
+            print("\nℹ️ [REGULAR MESSAGE - NOT A REPLY]")
+
+        print("\n📦 [FULL JSON PAYLOAD]:")
+        try:
+            print(json.dumps(data, indent=2, default=str))
+        except Exception:
+            print(data)
+        print("=" * 60 + "\n")
+
+        return Response({"success": True, "message": "Webhook logged successfully"})
+
+

@@ -23,6 +23,18 @@ class SessionManager {
             return this.instances.get(sessionId);
         }
 
+        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(userId);
+
+        await Session.findOrCreate({
+            where: { id: sessionId },
+            defaults: {
+                id: sessionId,
+                userId: isUuid ? userId : null,
+                status: 'INIT',
+                webhookUrl: options.webhookUrl || null
+            }
+        });
+
         const instance = new WhatsAppInstance(sessionId, {
             ...options,
             onStatusChange: async (sid, status, extra = {}) => {

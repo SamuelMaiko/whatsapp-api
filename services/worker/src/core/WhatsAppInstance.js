@@ -23,7 +23,7 @@ class WhatsAppInstance {
         this.options = options;
         this.sock = null;
         this.status = 'INIT';
-        this.status = 'INIT';
+        this.qr = null;
 
         this.logger = P({ level: "info" }); // Increased log level for debugging
         this.onStatusChange = options.onStatusChange || (() => { });
@@ -64,6 +64,7 @@ class WhatsAppInstance {
                 if (qr) {
                     this.status = 'QR';
                     const qrDataUrl = await QRCode.toDataURL(qr);
+                    this.qr = qrDataUrl;
                     await this.onStatusChange(this.sessionId, 'QR', { qr: qrDataUrl });
                 }
 
@@ -79,12 +80,14 @@ class WhatsAppInstance {
                         this.init();
                     } else {
                         this.status = 'DISCONNECTED';
-                        await this.onStatusChange(this.sessionId, 'DISCONNECTED');
+                        this.qr = null;
+                        await this.onStatusChange(this.sessionId, 'DISCONNECTED', { qr: null });
                         this.clearSession();
                     }
                 } else if (connection === "open") {
                     this.status = 'CONNECTED';
-                    await this.onStatusChange(this.sessionId, 'CONNECTED');
+                    this.qr = null;
+                    await this.onStatusChange(this.sessionId, 'CONNECTED', { qr: null });
                     console.log(`✅ [${this.sessionId}] Connected`);
                 }
             });
